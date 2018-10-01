@@ -65,6 +65,6 @@
 	</s:iterator> 
 	</table>
   	<br>
-  	<a href="/NFLPlayoffsPoolWeb/manageGames?year=${year}&name=${name}">Manage NFL Playoff Games</a>
+  	<a href="/NFLPlayoffPool/manageGames?year=${year}&name=${name}">Manage NFL Playoff Games</a>
 	</body>
 </html>
