@@ -18,6 +18,7 @@ import data.NFLPlayoffsGame;
 
 public class UpdateScoreAction extends ActionSupport {
 	
+	private static final long serialVersionUID = 1L;
 	private String winner;
 	private String loser;
 	private Integer gameIndex;
