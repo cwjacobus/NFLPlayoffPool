@@ -1,9 +1,5 @@
 package actions;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,23 +21,9 @@ public class UpdateScoreAction extends ActionSupport {
 	private String year;
 
 	public String execute() throws Exception {
-		try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-        } catch (Exception ex) {
-        }
-		Connection conn = null;
-		try {
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/nflplayoffspool" + this.year + "?" +
-				"user=root&password=PASSWORD");
-		}
-		catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
-		}
-		updateScore(conn, winner, loser, gameIndex);
+		DAO.updateScore(winner, loser, gameIndex);
 		
-		List<NFLPlayoffsGame> nflPlayoffsGameList = DAO.getNFLPlayoffsGamesList(conn);
+		List<NFLPlayoffsGame> nflPlayoffsGameList = DAO.getNFLPlayoffsGamesList();
 		
 		ValueStack stack = ActionContext.getContext().getValueStack();
 	    Map<String, Object> context = new HashMap<String, Object>();
@@ -84,14 +66,4 @@ public class UpdateScoreAction extends ActionSupport {
 	   this.year = year;
 	}
 
-	// DB
-	private void updateScore(Connection conn, String winner, String loser, Integer gameIndex) {
-		try {
-			Statement stmt = conn.createStatement();
-			stmt.execute("UPDATE NFLPlayoffsGame SET Winner = '" + winner + "',Loser = '" + loser + "',Completed = true WHERE GameIndex = " + gameIndex);
-		}
-		catch (SQLException e) {
-		}
-		return;
-	}
 }

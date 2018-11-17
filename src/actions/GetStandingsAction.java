@@ -1,13 +1,12 @@
 package actions;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
+
+import org.apache.struts2.interceptor.SessionAware;
 
 import com.opensymphony.xwork2.util.ValueStack;
 import com.opensymphony.xwork2.ActionContext;
@@ -18,30 +17,19 @@ import data.Standings;
 
 //import data.User;
 
-public class GetStandingsAction extends ActionSupport {
+public class GetStandingsAction extends ActionSupport implements SessionAware {
 	
 	private static final long serialVersionUID = 1L;
 	private Boolean maxPoints;
-	private String year;
+	private Integer year = null;
 	private String name;
+	Map<String, Object> userSession;
 	
 	public String execute() throws Exception {
-		try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-        } catch (Exception ex) {
-        }
-		Connection conn = null;
-		try {
-		    conn = DriverManager.getConnection("jdbc:mysql://localhost/nflplayoffspool" + this.year + "?" +
-		    	"user=root&password=PASSWORD");
-		}
-		catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
-		}
+		userSession.put("year", year);
+		DAO.setConnection(year);
 		
-		TreeMap<String, Standings> standings = DAO.getStandings(conn, maxPoints);
+		TreeMap<String, Standings> standings = DAO.getStandings(maxPoints);
 		//Iterate through standings to make formatted display string
 		Iterator<Entry<String, Standings>> it = standings.entrySet().iterator();
     	int standingsIndex = 1;
@@ -85,11 +73,15 @@ public class GetStandingsAction extends ActionSupport {
 	   this.name = name;
 	}
 	
-	public String getYear() {
+	public Integer getYear() {
 		return year;
 	}
 
-	public void setYear(String year) {
+	public void setYear(Integer year) {
 	   this.year = year;
+	}
+	
+	public void setSession(Map<String, Object> session) {
+		   this.userSession = session ;
 	}
 }

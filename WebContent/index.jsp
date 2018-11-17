@@ -14,10 +14,11 @@
       	<input type="text" name="name"/><br>
       	<input type="hidden" name="maxPoints" value=false/>
       	<select name="year">
-             <option value=""></option>
              <option value="14">2014</option>
              <option value="15">2015</option>
              <option value="16">2016</option>
+             <option value="17">2017</option>
+             <option value="18">2018</option>
 		</select><br>
       	<input type="submit" value="Login"/>
   	 </form>

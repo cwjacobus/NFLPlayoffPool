@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -19,7 +20,9 @@ import data.Standings;
 
 public class DAO {
 	
-	public static List<NFLPlayoffsGame> getNFLPlayoffsGamesList(Connection conn) {
+	public static Connection conn;
+	
+	public static List<NFLPlayoffsGame> getNFLPlayoffsGamesList() {
 		List<NFLPlayoffsGame>nflPlayoffsGameList = new ArrayList<NFLPlayoffsGame>();
 		try {
 			Statement stmt = conn.createStatement();
@@ -37,7 +40,7 @@ public class DAO {
 	}
 	
 	// DB
-	public static TreeMap<String, Standings> getStandings(Connection conn, boolean maxPoints) {
+	public static TreeMap<String, Standings> getStandings(boolean maxPoints) {
 		TreeMap<String, Standings> standings = new TreeMap<String, Standings>(Collections.reverseOrder());
 		HashMap<String, String> ptsStandings = new HashMap<String, String>();
 		HashMap<String, String> maxPtsStandings = new HashMap<String, String>();
@@ -51,7 +54,6 @@ public class DAO {
 				if (rs.getInt(2) < 10) {
 					points = "0" + points;
 				}
-				//standings.put(points + ":" + rs.getString(1) + ":0", rs.getString(1));
 				ptsStandings.put(rs.getString(1), points);
 			}
 		}
@@ -111,7 +113,7 @@ public class DAO {
 	}
 	
 	// Not used
-	public static Map<Integer, List<Pick>> getPicksMap(Connection conn) { 
+	public static Map<Integer, List<Pick>> getPicksMap() { 
 		Map<Integer, List<Pick>> picksMap = new HashMap<Integer, List<Pick>>();
 		ArrayList<Pick> picksList = new ArrayList<Pick>();
 		Integer prevUserId = null; 
@@ -145,7 +147,7 @@ public class DAO {
 		return picksMap;
 	}
 	
-	public static int getNumberOfCompletedGames(Connection conn) {
+	public static int getNumberOfCompletedGames() {
 		int numberOfCompletedGames = 0;
 		try {
 			Statement stmt = conn.createStatement();
@@ -156,6 +158,54 @@ public class DAO {
 		catch (SQLException e) {
 		}
 		return numberOfCompletedGames;
+	}
+	
+	public static void updateScore(String winner, String loser, Integer gameIndex) {
+		try {
+			Statement stmt = conn.createStatement();
+			stmt.execute("UPDATE NFLPlayoffsGame SET Winner = '" + winner + "',Loser = '" + loser + "',Completed = true WHERE GameIndex = " + gameIndex);
+		}
+		catch (SQLException e) {
+		}
+		return;
+	}
+	
+	public static boolean useYearClause(Integer year) {
+		boolean yearClause = false;
+		
+		if (year.intValue() >= 17) {
+			yearClause = true;
+		}
+		return yearClause;
+	}
+	
+	private static String getYearClause(Integer year) {
+		return "year = " + year;
+	}
+	
+	private static String getYearClause(String prefix, Integer year) {
+		return prefix + ".year = " + year;
+	}
+	
+	public static void setConnection(Integer year) {
+		try {
+            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+        } 
+		catch (Exception ex) {
+        }
+		try {
+			String connString = "jdbc:mysql://localhost/nflplayoffspool";
+			if (year.intValue() < 17) { // only append year before 2017
+			    connString += year;
+			}
+			connString += "?user=root&password=PASSWORD&useSSL=false";
+			conn = DriverManager.getConnection(connString);
+		}
+		catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
 	}
 		
 	/*private static List<User> getUsersList(Connection conn) {
