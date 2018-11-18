@@ -18,12 +18,12 @@ public class UpdateScoreAction extends ActionSupport {
 	private String winner;
 	private String loser;
 	private Integer gameIndex;
-	private String year;
+	private Integer year;
 
 	public String execute() throws Exception {
 		DAO.updateScore(winner, loser, gameIndex);
 		
-		List<NFLPlayoffsGame> nflPlayoffsGameList = DAO.getNFLPlayoffsGamesList();
+		List<NFLPlayoffsGame> nflPlayoffsGameList = DAO.getNFLPlayoffsGamesList(year);
 		
 		ValueStack stack = ActionContext.getContext().getValueStack();
 	    Map<String, Object> context = new HashMap<String, Object>();
@@ -58,11 +58,11 @@ public class UpdateScoreAction extends ActionSupport {
 		this.gameIndex = gameIndex;
 	}
 	
-	public String getYear() {
+	public Integer getYear() {
 		return year;
 	}
 
-	public void setYear(String year) {
+	public void setYear(Integer year) {
 	   this.year = year;
 	}
 

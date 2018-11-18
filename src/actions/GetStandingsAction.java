@@ -29,7 +29,7 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 		userSession.put("year", year);
 		DAO.setConnection(year);
 		
-		TreeMap<String, Standings> standings = DAO.getStandings(maxPoints);
+		TreeMap<String, Standings> standings = DAO.getStandings(maxPoints, year);
 		//Iterate through standings to make formatted display string
 		Iterator<Entry<String, Standings>> it = standings.entrySet().iterator();
     	int standingsIndex = 1;

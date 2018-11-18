@@ -22,11 +22,11 @@ public class DAO {
 	
 	public static Connection conn;
 	
-	public static List<NFLPlayoffsGame> getNFLPlayoffsGamesList() {
+	public static List<NFLPlayoffsGame> getNFLPlayoffsGamesList(Integer year) {
 		List<NFLPlayoffsGame>nflPlayoffsGameList = new ArrayList<NFLPlayoffsGame>();
 		try {
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM NFLPlayoffsGame");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM NFLPlayoffsGame" + (useYearClause(year) ? " where " + getYearClause(year): ""));
 			NFLPlayoffsGame nflPlayoffsGame;
 			while (rs.next()) {
 				nflPlayoffsGame = new NFLPlayoffsGame(rs.getInt("GameIndex"), rs.getString("Description"), rs.getString("Winner"),
@@ -40,7 +40,7 @@ public class DAO {
 	}
 	
 	// DB
-	public static TreeMap<String, Standings> getStandings(boolean maxPoints) {
+	public static TreeMap<String, Standings> getStandings(boolean maxPoints, Integer year) {
 		TreeMap<String, Standings> standings = new TreeMap<String, Standings>(Collections.reverseOrder());
 		HashMap<String, String> ptsStandings = new HashMap<String, String>();
 		HashMap<String, String> maxPtsStandings = new HashMap<String, String>();
@@ -48,7 +48,8 @@ public class DAO {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g " + 
 				"where p.userId = u.userId and g.gameIndex = p.gameId and g.completed = true and p.winner = g.winner " +  
-				"group by u.UserName order by sum(g.PointsValue) desc, u.UserName");
+				(useYearClause(year) ? "and " + getYearClause("g", year) : "") +
+				" group by u.UserName order by sum(g.PointsValue) desc, u.UserName");
 			while (rs.next()) {
 				String points = Integer.toString(rs.getInt(2));
 				if (rs.getInt(2) < 10) {
@@ -74,7 +75,8 @@ public class DAO {
 			ResultSet rs = stmt.executeQuery("select u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g where " + 
 			"p.userId= u.userId and g.gameIndex = p.gameId and " + 
 			"((g.completed = true and p.winner = g.winner) or (g.completed = false and p.winner not in (select Loser from NFLPLayoffsGame where Loser is not null))) " + 
-			"group by u.UserName order by sum(g.PointsValue) desc, u.UserName");
+			(useYearClause(year) ? "and " + getYearClause("g", year) : "") +
+			" group by u.UserName order by sum(g.PointsValue) desc, u.UserName");
 			
 			while (rs.next()) {
 				String maxPts = Integer.toString(rs.getInt(2));
@@ -99,14 +101,12 @@ public class DAO {
 			stand.setUserName(line.getKey());
 			stand.setPoints(points);
 			stand.setMaxPoints(line.getValue());
-			//standings.put(points + ":" + line.getKey() + ":" + line.getValue(), line.getKey());
 			if (maxPoints) {
 				standings.put(line.getValue() + ":" + line.getKey(), stand);
 			}
 			else {
 				standings.put(points + ":" + line.getKey(), stand);
 			}
-			
 		}
 				
 		return standings;
@@ -147,11 +147,11 @@ public class DAO {
 		return picksMap;
 	}
 	
-	public static int getNumberOfCompletedGames() {
+	public static int getNumberOfCompletedGames(Integer year) {
 		int numberOfCompletedGames = 0;
 		try {
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("select count(*) from NFLPlayoffsGame where Completed = 1");
+			ResultSet rs = stmt.executeQuery("select count(*) from NFLPlayoffsGame where Completed = 1" + (useYearClause(year) ? " where " + getYearClause(year): ""));
 			rs.next();
 			numberOfCompletedGames = rs.getInt(1);
 		}

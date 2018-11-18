@@ -15,11 +15,11 @@ public class ManageGamesAction extends ActionSupport {
 	
 	private static final long serialVersionUID = 1L;
 	private String name;
-	private String year;
+	private Integer year;
 
 	public String execute() throws Exception {
 		
-		List<NFLPlayoffsGame> nflPlayoffsGameList = DAO.getNFLPlayoffsGamesList();
+		List<NFLPlayoffsGame> nflPlayoffsGameList = DAO.getNFLPlayoffsGamesList(year);
 		
 		ValueStack stack = ActionContext.getContext().getValueStack();
 	    Map<String, Object> context = new HashMap<String, Object>();
@@ -37,11 +37,11 @@ public class ManageGamesAction extends ActionSupport {
 	   this.name = name;
 	}
 	
-	public String getYear() {
+	public Integer getYear() {
 		return year;
 	}
 
-	public void setYear(String year) {
+	public void setYear(Integer year) {
 	   this.year = year;
 	}
 }

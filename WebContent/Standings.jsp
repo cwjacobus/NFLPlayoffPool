@@ -24,7 +24,7 @@
 </head>
 <body>
     Hello, <s:property value="name"/><br><br>
-	<h2>Standings</h2>
+	<h2>20${year} Standings</h2>
 	<table style="padding: 0; border-spacing: 0;">
 	<tr class="odd"><th></th><th>Name</th>
 	<c:choose>

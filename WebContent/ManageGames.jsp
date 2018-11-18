@@ -6,7 +6,7 @@
 </head>
 <body>
 	Hello, <s:property value="name"/><br><br>
-	Update NFL Playoff Games<br><br>
+	Update 20${year} NFL Playoff Games<br><br>
 	<s:iterator value="nflPlayoffsGameList" var="nflPlayoffsGame">
   		<form action="updateScore">
   		<table><tr>
