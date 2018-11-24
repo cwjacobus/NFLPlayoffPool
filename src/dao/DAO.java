@@ -23,6 +23,18 @@ public class DAO {
 	
 	public static Connection conn;
 	
+	public static void createNFLPlayoffsGame(String description, String winner, Integer pointsValue, String loser, Integer year) {
+		try {
+			Statement stmt = conn.createStatement();
+			String insertSQL = "INSERT INTO NFLPlayoffsGame (Description, Winner, PointsValue, Loser, Completed, Year) VALUES ('" + 
+				description + "', '" + winner + "', " + pointsValue + " , '" + loser + "', 0, " + year + ");";
+			stmt.execute(insertSQL);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static int createUser(String userName, Integer year) {
 		int userId = 0;
 		try {
@@ -177,6 +189,64 @@ public class DAO {
 		catch (SQLException e) {
 		}
 		return picksMap;
+	}
+	
+	public static int getUsersCount(Integer year) {
+		int numberOfUsers = 0;
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select count(*) from User" + (useYearClause(year) ? " where " + getYearClause(year): ""));
+			rs.next();
+			numberOfUsers = rs.getInt(1);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return numberOfUsers;
+	}
+	
+	public static int getNFLPlayoffsGamesCount(Integer year) {
+		int numberOfNFLPlayoffsGames = 0;
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select count(*) from NFLPlayoffsGame" + (useYearClause(year) ? " where " + getYearClause(year): ""));
+			rs.next();
+			numberOfNFLPlayoffsGames = rs.getInt(1);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return numberOfNFLPlayoffsGames;
+	}
+	
+	public static int getPicksCount(Integer year) {
+		int numberOfPicks = 0;
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select count(*) from Pick" + 
+				(useYearClause(year) ? " p, NFLPlayoffsGame npg where p.gameId = npg.gameId and npg.year = " + year: ""));
+			rs.next();
+			numberOfPicks = rs.getInt(1);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return numberOfPicks;
+	}
+	
+	public static boolean isThereDataForAYear(int year) {
+		int totalDataCount = 0;
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select (select count(*) from NFLPlayoffsGame where year = " +
+				year + ") + (select count(*) from User where year = " + year + ") as total_rows from dual");
+			rs.next();
+			totalDataCount = rs.getInt(1);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return totalDataCount == 0;
 	}
 	
 	public static int getNumberOfCompletedGames(Integer year) {

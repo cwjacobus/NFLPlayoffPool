@@ -72,16 +72,16 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    	if (usersCB != null) {
 	    		usersImport = true; 
 	    		// Check for users already imported
-	    		/*if (DAO.getUsersCount(year) > 0) {
+	    		if (DAO.getUsersCount(year) > 0) {
 	    			context.put("errorMsg", "Users already imported for 20" + year + "!  Delete and reimport.");
 	    			stack.push(context);
 	    			return "error";
-	    		}*/
+	    		}
 	    	}
 	    	if (picksCB != null) {
 	    		picksImport = true;
 	    		// Check for games imported
-	    		/*if (DAO.getNFLPlayoffsGamesCount(year) == 0) {
+	    		if (DAO.getNFLPlayoffsGamesCount(year) == 0) {
 	    			context.put("errorMsg", "NFLPlayoffs Games not imported for 20" + year + "!  Import Bowl Games.");
 	    			stack.push(context);
 	    			return "error";
@@ -91,16 +91,16 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    			context.put("errorMsg", "Picks already imported for 20" + year + "!  Delete and reimport.");
 	    			stack.push(context);
 	    			return "error";
-	    		}*/
+	    		}
 	    	}
 	    	if (gamesCB != null) {
 	    		nflPlayoffsGamesImport = true; 
 	    		// Check for games already imported
-	    		/*if (DAO.getnflPlayoffsGamesImportGamesCount(year) > 0) {
+	    		if (DAO.getNFLPlayoffsGamesCount(year) > 0) {
 	    			context.put("errorMsg", "NFLPlayoffs Games already imported for 20" + year + "!  Delete and reimport.");
 	    			stack.push(context);
 	    			return "error";
-	    		}*/
+	    		}
 	    	}
 	    	if (usersImport || picksImport || nflPlayoffsGamesImport) {
 	    		File inputFile = new File(prop.getProperty("inputFilePath") + inputFileName);
@@ -164,64 +164,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        				}
 	        				String pick = getStringFromCell(row, cell.getColumnIndex());
 	        				pick = pick.replace(".", "");
-	        				if (pick.equalsIgnoreCase("CINC") || pick.equalsIgnoreCase("CINCI") || pick.equalsIgnoreCase("CINCY")) {
-	        					pick = "CIN";
-	        				}
-	        				else if (pick.equalsIgnoreCase("PITT") || pick.equalsIgnoreCase("STEELERS")) {
-	        					pick = "PIT";
-	        				}
-	        				else if (pick.equalsIgnoreCase("ARIZ") || pick.equalsIgnoreCase("ARI") || pick.equalsIgnoreCase("AZ")) {
-	        					pick = "ARZ";
-	        				}
-	        				else if (pick.equalsIgnoreCase("BALT")) {
-	        					pick = "BAL";
-	        				}
-	        				else if (pick.equalsIgnoreCase("INDY")) {
-	        					pick = "IND";
-	        				}
-	        				else if (pick.equalsIgnoreCase("DENV")) {
-	        					pick = "DEN";
-	        				}
-	        				else if (pick.equalsIgnoreCase("SEAT") || pick.equalsIgnoreCase("SEATTLE")) {
-	        					pick = "SEA";
-	        				}
-	        				else if (pick.equalsIgnoreCase("WASH")) {
-	        					pick = "WAS";
-	        				}
-	        				else if (pick.equalsIgnoreCase("HOUSTON")) {
-	        					pick = "HOU";
-	        				}
-	        				else if (pick.equalsIgnoreCase("LA") || pick.equalsIgnoreCase("RAMS")  || pick.equalsIgnoreCase("LAR")) {
-	        					pick = "LARAMS";
-	        				}
-	        				else if (pick.equalsIgnoreCase("PHILLY") || pick.equalsIgnoreCase("PHILA")) {
-	        					pick = "PHI";
-	        				}
-	        				else if (pick.equalsIgnoreCase("TENN") || pick.equalsIgnoreCase("TITANS")) {
-	        					pick = "TEN";
-	        				}
-	        				else if (pick.equalsIgnoreCase("BILLS")) {
-	        					pick = "BUF";
-	        				}
-	        				else if (pick.equalsIgnoreCase("SAINTS") || pick.equalsIgnoreCase("NEW ORLEANS")) {
-	        					pick = "NO";
-	        				}
-	        				else if (pick.equalsIgnoreCase("FALCONS")) {
-	        					pick = "ATL";
-	        				}
-	        				else if (pick.equalsIgnoreCase("CHIEFS")) {
-	        					pick = "KC";
-	        				}
-	        				else if (pick.equalsIgnoreCase("MINN")) {
-	        					pick = "MIN";
-	        				}
-	        				else if (pick.equalsIgnoreCase("PATS")) {
-	        					pick = "NE";
-	        				}
-	        				else if (pick.equalsIgnoreCase("JAC")) {
-	        					pick = "JAX";
-	        				}
-	        				
+	        				pick = getNFLTeamFromAlias(pick);
 	        				Double totalPoints = null;
 	        				try {
 	        					totalPoints = Double.parseDouble(pick);
@@ -248,7 +191,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    }
 	}
 	
-	private static void importNFLPlayoffsGames(HSSFWorkbook hWorkbook) {	
+	private void importNFLPlayoffsGames(HSSFWorkbook hWorkbook) {	
 		try {  
 			HSSFSheet sheet = hWorkbook.getSheetAt(0);
 	        System.out.println(sheet.getSheetName());
@@ -261,7 +204,6 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        		rowIterator.next();
 	        		pointsValueRow = rowIterator.next();
 	        		Iterator<Cell> cellIter = row.cellIterator();
-	        		int gameIndex = 1;
 	        		while (cellIter.hasNext()){
 	        			Cell cell = cellIter.next();
 	        			if (cell.getColumnIndex() == 0 || cell.getColumnIndex() == 1) {
@@ -275,20 +217,13 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		        		String pointsValueString = getStringFromCell(pointsValueRow, cell.getColumnIndex());
 		        		pointsValueString = pointsValueString.split(" ")[0].replace("(", "");
 		        		int pointsValue = Integer.parseInt(pointsValueString);
-		        		//stmt.execute("INSERT INTO NflPlayoffsGame (GameIndex, Description, Winner, Loser, PointsValue, Completed) VALUES (" + 
-		        		//	gameIndex + ",'" + gameDesc + "', '', ''," + pointsValue + ", false);");
-		        		gameIndex++;
+		        		DAO.createNFLPlayoffsGame(gameDesc, "", pointsValue, "",  year);
 	        		}
 	        		
 	        		// Manually add Champ games and SB
-	        		//stmt.execute("INSERT INTO NflPlayoffsGame (GameIndex, Description, Winner, Loser, PointsValue, Completed) VALUES (" + 
-	        		//	gameIndex + ",'AFC Champ', '', '', 10, false);");
-	        		gameIndex++;
-	        		//stmt.execute("INSERT INTO NflPlayoffsGame (GameIndex, Description, Winner, Loser, PointsValue, Completed) VALUES (" + 
-	        		//	gameIndex + ",'NFC Champ', '', '', 10, false);");
-	        		gameIndex++;
-	        		//stmt.execute("INSERT INTO NflPlayoffsGame (GameIndex, Description, Winner, Loser, PointsValue, Completed) VALUES (" + 
-	        		//	gameIndex + ",'Super Bowl', '', '', 20, false);");
+	        		DAO.createNFLPlayoffsGame("AFC Champ", "", 10, "",  year);
+	        		DAO.createNFLPlayoffsGame("NFC Champ", "", 10, "",  year);
+	        		DAO.createNFLPlayoffsGame("Super Bowl", "", 20, "",  year);
 	        		break;
 	        	}
 	        }
@@ -298,7 +233,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    }
 	}
 	
-	private static String getStringFromCell(Row row, int index) {
+	private String getStringFromCell(Row row, int index) {
 		String cellString;
 		   
 		if (row.getCell(index) == null || row.getCell(index).getCellType() == CellType.BLANK) {
@@ -320,7 +255,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		 return cellString;
 	}
 	
-	public static Double getNumberFromCell(Row row, int index) {
+	public Double getNumberFromCell(Row row, int index) {
 	    Double cellNumber;
 	    
 	    if (row.getCell(index) == null || row.getCell(index).getCellType() == CellType.BLANK) {
@@ -379,4 +314,70 @@ public class ImportAction extends ActionSupport implements SessionAware {
     public void setSession(Map<String, Object> sessionMap) {
         this.userSession = sessionMap;
     }
+	
+	private String getNFLTeamFromAlias(String alias) {
+		
+		String nflTeam = alias;
+		
+		if (nflTeam.equalsIgnoreCase("CINC") || nflTeam.equalsIgnoreCase("CINCI") || nflTeam.equalsIgnoreCase("CINCY")) {
+			nflTeam = "CIN";
+		}
+		else if (nflTeam.equalsIgnoreCase("PITT") || nflTeam.equalsIgnoreCase("STEELERS")) {
+			nflTeam = "PIT";
+		}
+		else if (nflTeam.equalsIgnoreCase("ARIZ") || nflTeam.equalsIgnoreCase("ARI") || nflTeam.equalsIgnoreCase("AZ")) {
+			nflTeam = "ARZ";
+		}
+		else if (nflTeam.equalsIgnoreCase("BALT")) {
+			nflTeam = "BAL";
+		}
+		else if (nflTeam.equalsIgnoreCase("INDY")) {
+			nflTeam = "IND";
+		}
+		else if (nflTeam.equalsIgnoreCase("DENV")) {
+			nflTeam = "DEN";
+		}
+		else if (nflTeam.equalsIgnoreCase("SEAT") || nflTeam.equalsIgnoreCase("SEATTLE")) {
+			nflTeam = "SEA";
+		}
+		else if (nflTeam.equalsIgnoreCase("WASH")) {
+			nflTeam = "WAS";
+		}
+		else if (nflTeam.equalsIgnoreCase("HOUSTON")) {
+			nflTeam = "HOU";
+		}
+		else if (nflTeam.equalsIgnoreCase("LA") || nflTeam.equalsIgnoreCase("RAMS")  || nflTeam.equalsIgnoreCase("LAR")) {
+			nflTeam = "LARAMS";
+		}
+		else if (nflTeam.equalsIgnoreCase("PHILLY") || nflTeam.equalsIgnoreCase("PHILA")) {
+			nflTeam = "PHI";
+		}
+		else if (nflTeam.equalsIgnoreCase("TENN") || nflTeam.equalsIgnoreCase("TITANS")) {
+			nflTeam = "TEN";
+		}
+		else if (nflTeam.equalsIgnoreCase("BILLS")) {
+			nflTeam = "BUF";
+		}
+		else if (nflTeam.equalsIgnoreCase("SAINTS") || nflTeam.equalsIgnoreCase("NEW ORLEANS")) {
+			nflTeam = "NO";
+		}
+		else if (nflTeam.equalsIgnoreCase("FALCONS")) {
+			nflTeam = "ATL";
+		}
+		else if (nflTeam.equalsIgnoreCase("CHIEFS")) {
+			nflTeam = "KC";
+		}
+		else if (nflTeam.equalsIgnoreCase("MINN")) {
+			nflTeam = "MIN";
+		}
+		else if (nflTeam.equalsIgnoreCase("PATS")) {
+			nflTeam = "NE";
+		}
+		else if (nflTeam.equalsIgnoreCase("JAC")) {
+			nflTeam = "JAX";
+		}
+		
+		return nflTeam;
+		
+	}
 }

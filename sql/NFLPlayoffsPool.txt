@@ -11,7 +11,7 @@ admin boolean
 
 CREATE TABLE NFLPlayoffsGame
 (
-GameIndex int PRIMARY KEY,
+GameIndex int PRIMARY KEY AUTO_INCREMENT,
 Description varchar(255) NOT NULL,
 Winner varchar(25),
 Loser varchar(25),
@@ -48,3 +48,8 @@ select g.description, p.winner, count(*) from Pick p, NFLPLayoffsGame g where g.
 
 // Get Max
 select u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g where p.userId= u.userId and g.gameIndex = p.gameId and ((g.completed = true and p.winner = g.winner) or (g.completed = false and p.winner not in (select Loser from NFLPLayoffsGame where Loser is not null))) group by u.UserName order by sum(g.PointsValue) desc, u.UserName;
+
+// Delete all users, picks and games for a given year (for a reimport)
+delete from pick where gameid in (select gameindex from nflplayoffsgame where year = X);
+delete from nflplayoffsgame where year = X;
+delete from user where year = X;
