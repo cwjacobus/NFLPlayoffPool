@@ -65,6 +65,18 @@
 	</s:iterator> 
 	</table>
   	<br>
-  	<a href="/NFLPlayoffPool/manageGames?year=${year}&name=${name}">Manage NFL Playoff Games</a>
+  	<c:if test = "${true}">
+  		<a href="/NFLPlayoffPool/manageGames?year=${year}&name=${name}">Manage NFL Playoff Games</a>
+  		<br>
+  		<h3>Import Data</h3>
+  		<form action="import">
+  			<input type="file" name="inputFileName" accept=".xls" /><br>
+  			<input type="checkbox" name="usersCB" value="Users"> Users<br>
+			<input type="checkbox" name="gamesCB" value="Games"> Games<br>
+			<input type="checkbox" name="picksCB" value="Picks"> Picks<br>
+			<input type="submit" value="Import">
+  		</form>
+  		<br>
+  	</c:if>
 	</body>
 </html>

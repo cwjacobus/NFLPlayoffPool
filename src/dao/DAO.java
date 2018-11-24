@@ -17,10 +17,42 @@ import java.util.Map.Entry;
 import data.NFLPlayoffsGame;
 import data.Pick;
 import data.Standings;
+import data.User;
 
 public class DAO {
 	
 	public static Connection conn;
+	
+	public static int createUser(String userName, Integer year) {
+		int userId = 0;
+		try {
+			Statement stmt = conn.createStatement();
+			boolean admin = userName.equalsIgnoreCase("Jacobus") ? true : false;
+			stmt.executeUpdate("INSERT INTO User (UserName, LastName, FirstName, Email, Year, admin) VALUES ('" + 
+				userName + "', '', '', '', " + year + "," + admin + ");");
+			ResultSet rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
+			if (rs.next()) {
+		       userId = rs.getInt(1);
+			}
+			//System.out.println("ID: " + userId);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return userId;
+	}
+	
+	public static void createPick(Integer userId, Integer gameId, String winner) {
+		try {
+			Statement stmt = conn.createStatement();
+			String insertSQL = "INSERT INTO Pick (UserId, GameId, Winner) VALUES (" + 
+				userId + ", " + gameId + ", '" + winner + "');";
+			stmt.execute(insertSQL);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public static List<NFLPlayoffsGame> getNFLPlayoffsGamesList(Integer year) {
 		List<NFLPlayoffsGame>nflPlayoffsGameList = new ArrayList<NFLPlayoffsGame>();
@@ -30,7 +62,7 @@ public class DAO {
 			NFLPlayoffsGame nflPlayoffsGame;
 			while (rs.next()) {
 				nflPlayoffsGame = new NFLPlayoffsGame(rs.getInt("GameIndex"), rs.getString("Description"), rs.getString("Winner"),
-					rs.getString("Loser"), rs.getInt("PointsValue"), rs.getBoolean("Completed"));
+					rs.getString("Loser"), rs.getInt("PointsValue"), rs.getBoolean("Completed"), (useYearClause(year) ? rs.getInt("Year") : 0));
 				nflPlayoffsGameList.add(nflPlayoffsGame);
 			}
 		}
@@ -207,20 +239,22 @@ public class DAO {
 			System.out.println("VendorError: " + ex.getErrorCode());
 		}
 	}
-		
-	/*private static List<User> getUsersList(Connection conn) {
+	
+	public static List<User> getUsersList(Integer year) {
 		List<User>userList = new ArrayList<User>();
 		try {
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM User");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM User" + (useYearClause(year) ? " where " + getYearClause(year): ""));
 			User user;
 			while (rs.next()) {
-				user = new User(rs.getInt("UserId"), rs.getString("UserName"), rs.getString("LastName"), rs.getString("FirstName"), rs.getString("Email"));
+				user = new User(rs.getInt("UserId"), rs.getString("UserName"), rs.getString("LastName"), rs.getString("FirstName"), 
+					rs.getString("Email"), (useYearClause(year) ? rs.getInt("Year") : 0), (useYearClause(year) ? rs.getBoolean("admin" ): false));
 				userList.add(user);
 			}
 		}
 		catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return userList;
-	}*/
+	}
 }

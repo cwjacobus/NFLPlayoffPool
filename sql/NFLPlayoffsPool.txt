@@ -1,0 +1,50 @@
+CREATE TABLE User
+(
+UserId int PRIMARY KEY AUTO_INCREMENT,
+UserName varchar(255) NOT NULL,
+LastName varchar(255),
+FirstName varchar(255),
+Email varchar(255),
+Year int(5),
+admin boolean
+);
+
+CREATE TABLE NFLPlayoffsGame
+(
+GameIndex int PRIMARY KEY,
+Description varchar(255) NOT NULL,
+Winner varchar(25),
+Loser varchar(25),
+PointsValue int,
+Completed boolean,
+Year int(5)
+);
+
+CREATE TABLE Pick
+(
+PickId int PRIMARY KEY AUTO_INCREMENT,
+UserId int,
+GameId int,
+Winner varchar(25)
+);
+
+
+
+INSERT INTO User (UserName, LastName, FirstName, Email, year)
+VALUES ('Jacobus', 'Jacobus', 'Chris', 'cjacobus@austin.rr.com', 18);
+
+INSERT INTO User (UserName, LastName, FirstName, Email, year) VALUES ('dummy', '', '', '', 18);
+INSERT INTO Pick (UserId, GameId, Favorite) VALUES ((select UserId from User where UserName = 'dummy'), 1, false);
+
+select p.* from Pick p, User u where p.userId= u.userId and u.userName = 'Jacobus'
+
+
+// Get standings
+select u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g where p.userId= u.userId and g.gameIndex = p.gameId and g.completed = true and p.winner = g.winner group by u.UserName order by sum(g.PointsValue) desc, u.UserName;
+
+
+// Get pick distribution
+select g.description, p.winner, count(*) from Pick p, NFLPLayoffsGame g where g.gameIndex = p.gameId group by g.description, p.winner order by g.gameIndex, count(*) desc;
+
+// Get Max
+select u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g where p.userId= u.userId and g.gameIndex = p.gameId and ((g.completed = true and p.winner = g.winner) or (g.completed = false and p.winner not in (select Loser from NFLPLayoffsGame where Loser is not null))) group by u.UserName order by sum(g.PointsValue) desc, u.UserName;
