@@ -23,11 +23,41 @@ public class DAO {
 	
 	public static Connection conn;
 	
-	public static void createNFLPlayoffsGame(String description, String winner, Integer pointsValue, String loser, Integer year) {
+	public static void createBatchPicks(List<Pick> picksList) {
+		try {
+			conn.setAutoCommit(false);
+			Statement stmt = conn.createStatement();
+			int picksCount = 0;
+			for (Pick p : picksList) {
+				String insertSQL = "INSERT INTO Pick (UserId, GameId, Winner) VALUES (" + 
+					p.getUserId() + ", " + p.getGameId() + ", '" + p.getWinner() + "');";
+				stmt.addBatch(insertSQL);
+				picksCount++;
+				// Every 500 lines, insert the records
+				if (picksCount % 250 == 0) {
+					System.out.println("Insert picks " + (picksCount - 250) + " : " + picksCount);
+					stmt.executeBatch();
+					conn.commit();
+					stmt.close();
+					stmt = conn.createStatement();
+				}
+			}
+			// Insert the remaining records
+			System.out.println("Insert remaining picks " + (picksCount - (picksCount % 250)) + " : " + picksCount);
+			stmt.executeBatch();
+			conn.commit();
+			conn.setAutoCommit(true); // set auto commit back to true for next inserts
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void createNFLPlayoffsGame(String description, Integer pointsValue, Integer year) {
 		try {
 			Statement stmt = conn.createStatement();
-			String insertSQL = "INSERT INTO NFLPlayoffsGame (Description, Winner, PointsValue, Loser, Completed, Year) VALUES ('" + 
-				description + "', '" + winner + "', " + pointsValue + " , '" + loser + "', 0, " + year + ");";
+			String insertSQL = "INSERT INTO NFLPlayoffsGame (Description, PointsValue, Completed, Year) VALUES ('" + 
+				description + "', " + pointsValue + ", 0, " + year + ");";
 			stmt.execute(insertSQL);
 		}
 		catch (SQLException e) {
@@ -118,8 +148,8 @@ public class DAO {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("select u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g where " + 
 			"p.userId= u.userId and g.gameIndex = p.gameId and " + 
-			"((g.completed = true and p.winner = g.winner) or (g.completed = false and p.winner not in (select Loser from NFLPLayoffsGame where Loser is not null))) " + 
-			(useYearClause(year) ? "and " + getYearClause("g", year) : "") +
+			"((g.completed = true and p.winner = g.winner) or (g.completed = false and p.winner not in (select Loser from NFLPLayoffsGame where Loser is not null" + 
+			(useYearClause(year) ? " and " + getYearClause(year) : "") + "))) " + (useYearClause(year) ? "and " + getYearClause("g", year) : "") +
 			" group by u.UserName order by sum(g.PointsValue) desc, u.UserName");
 			
 			while (rs.next()) {
@@ -224,7 +254,7 @@ public class DAO {
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("select count(*) from Pick" + 
-				(useYearClause(year) ? " p, NFLPlayoffsGame npg where p.gameId = npg.gameId and npg.year = " + year: ""));
+				(useYearClause(year) ? " p, NFLPlayoffsGame npg where p.gameId = npg.gameIndex and npg.year = " + year: ""));
 			rs.next();
 			numberOfPicks = rs.getInt(1);
 		}
@@ -232,6 +262,21 @@ public class DAO {
 			e.printStackTrace();
 		}
 		return numberOfPicks;
+	}
+	
+	public static int getFirstGameIndexForAYear(int year) {
+		int firstGameIndex = 1;
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select min(GameIndex) from NFLPlayoffsGame where year = " + year);
+			rs.next();
+			firstGameIndex = rs.getInt(1);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return firstGameIndex;
 	}
 	
 	public static boolean isThereDataForAYear(int year) {

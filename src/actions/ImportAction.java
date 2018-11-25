@@ -3,6 +3,7 @@ package actions;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -121,8 +122,9 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	}
 	
 	private void importUsersAndPicks(HSSFWorkbook hWorkbook) {
+		List<Pick> picksList = new ArrayList<Pick>();
+		List<User> userList = DAO.getUsersList(year);
 		try {  
-			List<User> userList = DAO.getUsersList(year);
 			HSSFSheet sheet = hWorkbook.getSheetAt(0);
 	        System.out.println(sheet.getSheetName());
 	        Iterator<Row> rowIterator = sheet.iterator();
@@ -156,7 +158,8 @@ public class ImportAction extends ActionSupport implements SessionAware {
         					}
         				}
 	        			Iterator<Cell> cellIter = row.cellIterator();
-	        			int gameIndex = 1;
+	        			// Get first game index - assume consecutive indexes
+	        			int gameIndex = DAO.useYearClause(year) ? DAO.getFirstGameIndexForAYear(year) : 1;
 	        			while (cellIter.hasNext()){
 	        				Cell cell = (Cell)cellIter.next();
 	        				if (cell.getColumnIndex() == 0 || cell.getColumnIndex() == 1) {
@@ -176,7 +179,8 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        				}
 	        				if ((pick != null)) {
 	        					System.out.print("PICK" + gameIndex + ": " + pick.toUpperCase() + " ");
-	        					DAO.createPick(user.getUserId(), gameIndex, pick.toUpperCase());
+	        					//DAO.createPick(user.getUserId(), gameIndex, pick.toUpperCase());
+	        					picksList.add(new Pick(0, user.getUserId(), gameIndex, pick.toUpperCase()));
 	        				}
 	        				gameIndex++;
 	        	        }
@@ -184,6 +188,9 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        		}
 	        	}
 	        	prevUser = userName;
+	        }
+	        if (picksList.size() > 0) {
+	        	DAO.createBatchPicks(picksList);
 	        }
 	    }
 	    catch (Exception e) {
@@ -217,13 +224,13 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		        		String pointsValueString = getStringFromCell(pointsValueRow, cell.getColumnIndex());
 		        		pointsValueString = pointsValueString.split(" ")[0].replace("(", "");
 		        		int pointsValue = Integer.parseInt(pointsValueString);
-		        		DAO.createNFLPlayoffsGame(gameDesc, "", pointsValue, "",  year);
+		        		DAO.createNFLPlayoffsGame(gameDesc, pointsValue, year);
 	        		}
 	        		
 	        		// Manually add Champ games and SB
-	        		DAO.createNFLPlayoffsGame("AFC Champ", "", 10, "",  year);
-	        		DAO.createNFLPlayoffsGame("NFC Champ", "", 10, "",  year);
-	        		DAO.createNFLPlayoffsGame("Super Bowl", "", 20, "",  year);
+	        		DAO.createNFLPlayoffsGame("AFC Champ", 10, year);
+	        		DAO.createNFLPlayoffsGame("NFC Champ", 10, year);
+	        		DAO.createNFLPlayoffsGame("Super Bowl", 20, year);
 	        		break;
 	        	}
 	        }
