@@ -279,6 +279,7 @@ public class DAO {
 		return firstGameIndex;
 	}
 	
+	/*
 	public static boolean isThereDataForAYear(int year) {
 		int totalDataCount = 0;
 		try {
@@ -292,7 +293,7 @@ public class DAO {
 			e.printStackTrace();
 		}
 		return totalDataCount == 0;
-	}
+	}*/
 	
 	public static int getNumberOfCompletedGames(Integer year) {
 		int numberOfCompletedGames = 0;
