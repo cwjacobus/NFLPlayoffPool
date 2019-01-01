@@ -8,6 +8,7 @@
 	</head>
 	<body>
 		<h1>Picks Saved</h1>
-		Picks Saved
+		Picks Saved<br><br>
+		go back to <a href="/NFLPlayoffPool/makePicks">Make Picks</a>
 	</body>
 </html>

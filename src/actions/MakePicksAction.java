@@ -1,12 +1,16 @@
 package actions;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.struts2.interceptor.SessionAware;
 
 import com.opensymphony.xwork2.util.ValueStack;
 
+import dao.DAO;
+import data.Pick;
+import data.Pool;
 import data.User;
 
 import com.opensymphony.xwork2.ActionContext;
@@ -18,6 +22,8 @@ public class MakePicksAction extends ActionSupport implements SessionAware {
 	private static final long serialVersionUID = 1L;
 	
 	Map<String, Object> userSession;
+	User user;
+	Pool pool;
 
 	public String execute() throws Exception {
 		ValueStack stack = ActionContext.getContext().getValueStack();
@@ -27,8 +33,11 @@ public class MakePicksAction extends ActionSupport implements SessionAware {
 			stack.push(context);
 			return "error";
 		}
-		User user = (User) userSession.get("user");
-		System.out.println("Make picks: " + user.getUserName());
+		user = (User) userSession.get("user");
+		pool = (Pool) userSession.get("pool");
+		Map<Integer, List<Pick>> picksMap = DAO.getPicksMap(pool);
+	    List<Pick> userPicks = picksMap.get(user.getUserId());
+	    context.put("userPicks", userPicks);
 	    stack.push(context);
 	    return "success";
 	}

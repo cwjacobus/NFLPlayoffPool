@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -90,6 +91,17 @@ public class DAO {
 			Statement stmt = conn.createStatement();
 			String insertSQL = "INSERT INTO Pick (UserId, GameId, Winner, PoolId, CreatedTime) VALUES (" + 
 				userId + ", " + gameId + ", '" + winner + "', " + poolId + ", NOW());";
+			stmt.execute(insertSQL);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void deletePicksByUserIdAndPoolId(Integer userId, Integer poolId) {
+		try {
+			Statement stmt = conn.createStatement();
+			String insertSQL = "DELETE from Pick WHERE userId = " + userId + " and poolId = " + poolId;
 			stmt.execute(insertSQL);
 		}
 		catch (SQLException e) {
@@ -186,8 +198,7 @@ public class DAO {
 		return standings;
 	}
 	
-	// Not used
-	public static Map<Integer, List<Pick>> getPicksMap() { 
+	public static Map<Integer, List<Pick>> getPicksMap(Pool pool) { 
 		Map<Integer, List<Pick>> picksMap = new HashMap<Integer, List<Pick>>();
 		ArrayList<Pick> picksList = new ArrayList<Pick>();
 		Integer prevUserId = null; 
@@ -195,24 +206,28 @@ public class DAO {
 		Integer gameId = null;
 		Integer pickId = null;
 		String winner = null;
+		Integer poolId = null;
+		Timestamp createdTime = null;
 		try {
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("select * from Pick order by UserId, GameId");
+			ResultSet rs = stmt.executeQuery("select * from Pick where poolId = " + pool.getPoolId() + " order by UserId, GameId");
 			while (rs.next()) {
 				userId = rs.getInt("UserId");
 				gameId = rs.getInt("GameId");
 				pickId = rs.getInt("PickId");
 				winner = rs.getString("Winner");
+				poolId = rs.getInt("PickId");
+				createdTime = rs.getTimestamp("CreatedTime");
 				if (prevUserId != null && userId.intValue()!= prevUserId.intValue()) {
 					picksMap.put(prevUserId, picksList);
 					picksList = new ArrayList<Pick>();
 				}
-				Pick p = new Pick(pickId, userId, gameId, winner);
+				Pick p = new Pick(pickId, userId, gameId, winner, poolId, createdTime);
 				picksList.add(p);
 				prevUserId = userId;
 			}
 			// add last one
-			if (userId != null && gameId != null && pickId != null && winner != null) {
+			if (userId != null && gameId != null && pickId != null && winner != null && poolId != null && createdTime != null) {
 				picksMap.put(userId, picksList);
 			}
 		}

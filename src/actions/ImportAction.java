@@ -3,7 +3,9 @@ package actions;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -183,7 +185,8 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        				if ((pick != null)) {
 	        					System.out.print("PICK" + gameIndex + ": " + pick.toUpperCase() + " ");
 	        					//DAO.createPick(user.getUserId(), gameIndex, pick.toUpperCase());
-	        					picksList.add(new Pick(0, user.getUserId(), gameIndex, pick.toUpperCase()));
+	        					picksList.add(new Pick(0, user.getUserId(), gameIndex, pick.toUpperCase(), 
+	        						pool.getPoolId(), new Timestamp(new Date().getTime())));
 	        				}
 	        				gameIndex++;
 	        	        }
