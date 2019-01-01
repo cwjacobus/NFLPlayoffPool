@@ -20,6 +20,15 @@
              <option value="17">2017</option>
              <option value="18">2018</option>
 		</select><br>
+		<select name="poolId">
+      	     <option value="0"></option>
+      	     <option value="1">Sculley 2014</option>
+             <option value="2">Sculley 2015</option>
+			 <option value="3">Sculley 2016</option>
+             <option value="4">Sculley 2017</option>
+             <option value="5">Sculley 2018</option>
+			 <option value="6">Jacobus 2018</option>
+		</select><br>
       	<input type="submit" value="Login"/>
   	 </form>
 	</body>

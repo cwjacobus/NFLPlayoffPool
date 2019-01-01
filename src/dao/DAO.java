@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 
 import data.NFLPlayoffsGame;
 import data.Pick;
+import data.Pool;
 import data.Standings;
 import data.User;
 
@@ -23,14 +24,14 @@ public class DAO {
 	
 	public static Connection conn;
 	
-	public static void createBatchPicks(List<Pick> picksList) {
+	public static void createBatchPicks(List<Pick> picksList, Integer poolId) {
 		try {
 			conn.setAutoCommit(false);
 			Statement stmt = conn.createStatement();
 			int picksCount = 0;
 			for (Pick p : picksList) {
-				String insertSQL = "INSERT INTO Pick (UserId, GameId, Winner) VALUES (" + 
-					p.getUserId() + ", " + p.getGameId() + ", '" + p.getWinner() + "');";
+				String insertSQL = "INSERT INTO Pick (UserId, GameId, Winner, PoolId, CreatedTime) VALUES (" + 
+					p.getUserId() + ", " + p.getGameId() + ", '" + p.getWinner() + "', " + poolId + ", NOW());";
 				stmt.addBatch(insertSQL);
 				picksCount++;
 				// Every 500 lines, insert the records
@@ -65,13 +66,13 @@ public class DAO {
 		}
 	}
 	
-	public static int createUser(String userName, Integer year) {
+	public static int createUser(String userName, Integer year, Integer poolId) {
 		int userId = 0;
 		try {
 			Statement stmt = conn.createStatement();
 			boolean admin = userName.equalsIgnoreCase("Jacobus") ? true : false;
-			stmt.executeUpdate("INSERT INTO User (UserName, LastName, FirstName, Email, Year, admin) VALUES ('" + 
-				userName + "', '', '', '', " + year + "," + admin + ");");
+			stmt.executeUpdate("INSERT INTO User (UserName, LastName, FirstName, Email, Year, admin, PoolId) VALUES ('" + 
+				userName + "', '', '', '', " + year + "," + admin + ", " + poolId + ");");
 			ResultSet rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
 			if (rs.next()) {
 		       userId = rs.getInt(1);
@@ -84,11 +85,11 @@ public class DAO {
 		return userId;
 	}
 	
-	public static void createPick(Integer userId, Integer gameId, String winner) {
+	public static void createPick(Integer userId, Integer gameId, String winner, Integer poolId) {
 		try {
 			Statement stmt = conn.createStatement();
-			String insertSQL = "INSERT INTO Pick (UserId, GameId, Winner) VALUES (" + 
-				userId + ", " + gameId + ", '" + winner + "');";
+			String insertSQL = "INSERT INTO Pick (UserId, GameId, Winner, PoolId, CreatedTime) VALUES (" + 
+				userId + ", " + gameId + ", '" + winner + "', " + poolId + ", NOW());";
 			stmt.execute(insertSQL);
 		}
 		catch (SQLException e) {
@@ -100,7 +101,7 @@ public class DAO {
 		List<NFLPlayoffsGame>nflPlayoffsGameList = new ArrayList<NFLPlayoffsGame>();
 		try {
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM NFLPlayoffsGame" + (useYearClause(year) ? " where " + getYearClause(year): ""));
+			ResultSet rs = stmt.executeQuery("SELECT * FROM NFLPlayoffsGame" + (useYearClause(year) ? " where " + getYearClause(year, null): ""));
 			NFLPlayoffsGame nflPlayoffsGame;
 			while (rs.next()) {
 				nflPlayoffsGame = new NFLPlayoffsGame(rs.getInt("GameIndex"), rs.getString("Description"), rs.getString("Winner"),
@@ -113,8 +114,7 @@ public class DAO {
 		return nflPlayoffsGameList;
 	}
 	
-	// DB
-	public static TreeMap<String, Standings> getStandings(boolean maxPoints, Integer year) {
+	public static TreeMap<String, Standings> getStandings(boolean maxPoints, Integer year, Integer poolId) {
 		TreeMap<String, Standings> standings = new TreeMap<String, Standings>(Collections.reverseOrder());
 		HashMap<String, String> ptsStandings = new HashMap<String, String>();
 		HashMap<String, String> maxPtsStandings = new HashMap<String, String>();
@@ -122,7 +122,7 @@ public class DAO {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g " + 
 				"where p.userId = u.userId and g.gameIndex = p.gameId and g.completed = true and p.winner = g.winner " +  
-				(useYearClause(year) ? "and " + getYearClause("g", year) : "") +
+				(useYearClause(year) ? "and " + getYearClause("g", year, "p", poolId) : "") +
 				" group by u.UserName order by sum(g.PointsValue) desc, u.UserName");
 			while (rs.next()) {
 				String points = Integer.toString(rs.getInt(2));
@@ -149,7 +149,7 @@ public class DAO {
 			ResultSet rs = stmt.executeQuery("select u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g where " + 
 			"p.userId= u.userId and g.gameIndex = p.gameId and " + 
 			"((g.completed = true and p.winner = g.winner) or (g.completed = false and p.winner not in (select Loser from NFLPLayoffsGame where Loser is not null" + 
-			(useYearClause(year) ? " and " + getYearClause(year) : "") + "))) " + (useYearClause(year) ? "and " + getYearClause("g", year) : "") +
+			(useYearClause(year) ? " and " + getYearClause("g", year, "p", poolId) : "") + "))) " + (useYearClause(year) ? "and " + getYearClause("g", year, "p", poolId) : "") +
 			" group by u.UserName order by sum(g.PointsValue) desc, u.UserName");
 			
 			while (rs.next()) {
@@ -221,11 +221,11 @@ public class DAO {
 		return picksMap;
 	}
 	
-	public static int getUsersCount(Integer year) {
+	public static int getUsersCount(Integer year, Integer poolId) {
 		int numberOfUsers = 0;
 		try {
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("select count(*) from User" + (useYearClause(year) ? " where " + getYearClause(year): ""));
+			ResultSet rs = stmt.executeQuery("select count(*) from User" + (useYearClause(year) ? " where " + getYearClause(year, poolId): ""));
 			rs.next();
 			numberOfUsers = rs.getInt(1);
 		}
@@ -239,7 +239,7 @@ public class DAO {
 		int numberOfNFLPlayoffsGames = 0;
 		try {
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("select count(*) from NFLPlayoffsGame" + (useYearClause(year) ? " where " + getYearClause(year): ""));
+			ResultSet rs = stmt.executeQuery("select count(*) from NFLPlayoffsGame" + (useYearClause(year) ? " where " + getYearClause(year, null): ""));
 			rs.next();
 			numberOfNFLPlayoffsGames = rs.getInt(1);
 		}
@@ -249,12 +249,12 @@ public class DAO {
 		return numberOfNFLPlayoffsGames;
 	}
 	
-	public static int getPicksCount(Integer year) {
+	public static int getPicksCount(Integer year, Integer poolId) {
 		int numberOfPicks = 0;
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("select count(*) from Pick" + 
-				(useYearClause(year) ? " p, NFLPlayoffsGame npg where p.gameId = npg.gameIndex and npg.year = " + year: ""));
+				(useYearClause(year) ? " p, NFLPlayoffsGame npg where p.gameId = npg.gameIndex and npg.year = " + year + " and p.poolId = " + poolId: ""));
 			rs.next();
 			numberOfPicks = rs.getInt(1);
 		}
@@ -279,6 +279,22 @@ public class DAO {
 		return firstGameIndex;
 	}
 	
+	public static Pool getPool(Integer poolId) {
+		Pool pool = null;
+		try {
+			Statement stmt = conn.createStatement();
+			String sql = "SELECT * FROM Pool where poolId = " + poolId;
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				pool = new Pool(rs.getInt("PoolId"), rs.getString("PoolName"), rs.getInt("Year"));
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return pool;
+	}
+	
 	/*
 	public static boolean isThereDataForAYear(int year) {
 		int totalDataCount = 0;
@@ -299,7 +315,7 @@ public class DAO {
 		int numberOfCompletedGames = 0;
 		try {
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("select count(*) from NFLPlayoffsGame where Completed = 1" + (useYearClause(year) ? " where " + getYearClause(year): ""));
+			ResultSet rs = stmt.executeQuery("select count(*) from NFLPlayoffsGame where Completed = 1" + (useYearClause(year) ? " where " + getYearClause(year, null): ""));
 			rs.next();
 			numberOfCompletedGames = rs.getInt(1);
 		}
@@ -327,12 +343,20 @@ public class DAO {
 		return yearClause;
 	}
 	
-	private static String getYearClause(Integer year) {
-		return "year = " + year;
+	private static String getYearClause(Integer year, Integer poolId) {
+		String yearClause = "year = " + year;
+		if (poolId != null) {
+			yearClause += " and PoolId = " + poolId;
+		}
+		return yearClause;
 	}
 	
-	private static String getYearClause(String prefix, Integer year) {
-		return prefix + ".year = " + year;
+	private static String getYearClause(String yearPrefix, Integer year, String poolIdPrefix, Integer poolId) {
+		String yearClause = yearPrefix + ".year = " + year;
+		if (poolId != null) {
+			yearClause += " and " + poolIdPrefix + ".PoolId = " + poolId;
+		}
+		return yearClause;
 	}
 	
 	public static void setConnection(Integer year) {
@@ -356,11 +380,11 @@ public class DAO {
 		}
 	}
 	
-	public static List<User> getUsersList(Integer year) {
+	public static List<User> getUsersList(Integer year, Integer poolId) {
 		List<User>userList = new ArrayList<User>();
 		try {
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM User" + (useYearClause(year) ? " where " + getYearClause(year): ""));
+			ResultSet rs = stmt.executeQuery("SELECT * FROM User" + (useYearClause(year) ? " where " + getYearClause(year, poolId): ""));
 			User user;
 			while (rs.next()) {
 				user = new User(rs.getInt("UserId"), rs.getString("UserName"), rs.getString("LastName"), rs.getString("FirstName"), 
@@ -372,5 +396,22 @@ public class DAO {
 			e.printStackTrace();
 		}
 		return userList;
+	}
+	
+	public static User getUser(String name, Integer year, Integer poolId) {
+		User user = null;
+		try {
+			Statement stmt = conn.createStatement();
+			String sql = "SELECT * FROM User where userName = '" + name + "'" + (useYearClause(year) ? " and " + getYearClause(year, poolId): "");
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				user = new User(rs.getInt("UserId"), rs.getString("UserName"), rs.getString("LastName"), rs.getString("FirstName"), 
+					rs.getString("Email"), (useYearClause(year) ? rs.getInt("Year") : 0), (useYearClause(year) ? rs.getBoolean("admin" ): false));
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return user;
 	}
 }

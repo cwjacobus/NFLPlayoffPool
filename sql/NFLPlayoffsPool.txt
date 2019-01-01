@@ -6,7 +6,8 @@ LastName varchar(255),
 FirstName varchar(255),
 Email varchar(255),
 Year int(5),
-admin boolean
+admin boolean,
+PoolId int(5)
 );
 
 CREATE TABLE NFLPlayoffsGame
@@ -25,13 +26,27 @@ CREATE TABLE Pick
 PickId int PRIMARY KEY AUTO_INCREMENT,
 UserId int,
 GameId int,
-Winner varchar(25)
+Winner varchar(25),
+PoolId int(5),
+CreatedTime timestamp
 );
 
+CREATE TABLE Pool
+(
+PoolId int(5) PRIMARY KEY,
+PoolName varchar(255) NOT NULL,
+Year int(5) NOT NULL
+);
 
+insert into pool (PoolId, PoolName, Year) values (1, 'Sculley 2014', 14);
+insert into pool (PoolId, PoolName, Year) values (2, 'Sculley 2015', 15);
+insert into pool (PoolId, PoolName, Year) values (3, 'Sculley 2016', 16);
+insert into pool (PoolId, PoolName, Year) values (4, 'Sculley 2017', 17);
+insert into pool (PoolId, PoolName, Year) values (5, 'Sculley 2018', 18);
+insert into pool (PoolId, PoolName, Year) values (6, 'Jacobus 2018', 18);
 
-INSERT INTO User (UserName, LastName, FirstName, Email, year)
-VALUES ('Jacobus', 'Jacobus', 'Chris', 'cjacobus@austin.rr.com', 18);
+INSERT INTO User (UserName, LastName, FirstName, Email, year, admin, poolid)
+VALUES ('Jacobus', 'Jacobus', 'Chris', 'cjacobus@austin.rr.com', 18, 1, 6);
 
 INSERT INTO User (UserName, LastName, FirstName, Email, year) VALUES ('dummy', '', '', '', 18);
 INSERT INTO Pick (UserId, GameId, Favorite) VALUES ((select UserId from User where UserName = 'dummy'), 1, false);

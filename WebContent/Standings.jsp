@@ -23,7 +23,6 @@
 <title>NFL Playoffs Pool</title>
 </head>
 <body>
-    Hello, <s:property value="name"/><br><br>
 	<h2>20${year} Standings</h2>
 	<table style="padding: 0; border-spacing: 0;">
 	<tr class="odd"><th></th><th>Name</th>
@@ -65,7 +64,19 @@
 	</s:iterator> 
 	</table>
   	<br>
-  	<c:if test = "${true}">
+  	<br>
+  	<a href="/NFLPlayoffPool/makePicks">
+  	<c:choose>
+  	<c:when test = "${!sessionScope.readOnly}">
+  		Make Picks
+  	</c:when>
+  	<c:otherwise>
+  		View Picks
+  	</c:otherwise>
+  	</c:choose>
+  	</a>
+  	<br><br>
+  	<c:if test = "${allowAdmin}">
   		<a href="/NFLPlayoffPool/manageGames?year=${year}&name=${name}">Manage NFL Playoff Games</a>
   		<br>
   		<h3>Import Data</h3>

@@ -24,6 +24,7 @@ import com.opensymphony.xwork2.util.ValueStack;
 
 import dao.DAO;
 import data.Pick;
+import data.Pool;
 import data.User;
 
 public class ImportAction extends ActionSupport implements SessionAware {
@@ -41,7 +42,8 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	Map<String, Object> userSession;
 	
 	Integer year;
-
+	Pool pool;
+	
 	public String execute() throws Exception {	
 		ValueStack stack = ActionContext.getContext().getValueStack();
 	    Map<String, Object> context = new HashMap<String, Object>();
@@ -51,6 +53,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 			return "error";
 		}
 		year = (Integer) userSession.get("year");
+		pool = (Pool) userSession.get("pool");
 		System.out.println("Import: " + year);
 		
 		InputStream input = ServletActionContext.getServletContext().getResourceAsStream("/WEB-INF/NFLPlayoffsPool.properties");
@@ -73,7 +76,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    	if (usersCB != null) {
 	    		usersImport = true; 
 	    		// Check for users already imported
-	    		if (DAO.getUsersCount(year) > 0) {
+	    		if (DAO.getUsersCount(year, pool.getPoolId()) > 0) {
 	    			context.put("errorMsg", "Users already imported for 20" + year + "!  Delete and reimport.");
 	    			stack.push(context);
 	    			return "error";
@@ -88,7 +91,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    			return "error";
 	    		}
 	    		// Check for picks already imported
-	    		if (DAO.getPicksCount(year) > 0) {
+	    		if (DAO.getPicksCount(year, pool.getPoolId()) > 0) {
 	    			context.put("errorMsg", "Picks already imported for 20" + year + "!  Delete and reimport.");
 	    			stack.push(context);
 	    			return "error";
@@ -123,7 +126,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	
 	private void importUsersAndPicks(HSSFWorkbook hWorkbook) {
 		List<Pick> picksList = new ArrayList<Pick>();
-		List<User> userList = DAO.getUsersList(year);
+		List<User> userList = DAO.getUsersList(year, pool.getPoolId());
 		try {  
 			HSSFSheet sheet = hWorkbook.getSheetAt(0);
 	        System.out.println(sheet.getSheetName());
@@ -147,7 +150,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        		System.out.println(userName);
 	        		//int userId = 0;
 	        		if (usersImport) {
-	        			DAO.createUser(userName, year);
+	        			DAO.createUser(userName, year, pool.getPoolId());
 	        		}
 	        		if (picksImport) {
 	        			User user = null;
@@ -190,7 +193,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        	prevUser = userName;
 	        }
 	        if (picksList.size() > 0) {
-	        	DAO.createBatchPicks(picksList);
+	        	DAO.createBatchPicks(picksList, pool.getPoolId());
 	        }
 	    }
 	    catch (Exception e) {
