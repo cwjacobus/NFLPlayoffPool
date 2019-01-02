@@ -158,11 +158,12 @@ public class DAO {
 		// Max points
 		try {
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("select u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g where " + 
-			"p.userId= u.userId and g.gameIndex = p.gameId and " + 
-			"((g.completed = true and p.winner = g.winner) or (g.completed = false and p.winner not in (select Loser from NFLPLayoffsGame where Loser is not null" + 
-			(useYearClause(year) ? " and " + getYearClause("g", year, "p", poolId) : "") + "))) " + (useYearClause(year) ? "and " + getYearClause("g", year, "p", poolId) : "") +
-			" group by u.UserName order by sum(g.PointsValue) desc, u.UserName");
+			String sql = "select u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g where " + 
+				"p.userId= u.userId and g.gameIndex = p.gameId and " + 
+				"((g.completed = true and p.winner = g.winner) or (g.completed = false and p.winner not in (select Loser from NFLPLayoffsGame where Loser is not null" + 
+				(useYearClause(year) ? " and " + getYearClause(year, null) : "") + "))) " + (useYearClause(year) ? "and " + getYearClause("g", year, "p", poolId) : "") +
+				" group by u.UserName order by sum(g.PointsValue) desc, u.UserName";
+			ResultSet rs = stmt.executeQuery(sql);
 			
 			while (rs.next()) {
 				String maxPts = Integer.toString(rs.getInt(2));

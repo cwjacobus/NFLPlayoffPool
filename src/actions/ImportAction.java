@@ -43,7 +43,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	
 	Map<String, Object> userSession;
 	
-	Integer year;
+	//Integer year;
 	Pool pool;
 	
 	public String execute() throws Exception {	
@@ -54,9 +54,8 @@ public class ImportAction extends ActionSupport implements SessionAware {
 			stack.push(context);
 			return "error";
 		}
-		year = (Integer) userSession.get("year");
 		pool = (Pool) userSession.get("pool");
-		System.out.println("Import: " + year);
+		System.out.println("Import: " + pool.getYear());
 		
 		InputStream input = ServletActionContext.getServletContext().getResourceAsStream("/WEB-INF/NFLPlayoffsPool.properties");
 		Properties prop = new Properties();
@@ -78,8 +77,8 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    	if (usersCB != null) {
 	    		usersImport = true; 
 	    		// Check for users already imported
-	    		if (DAO.getUsersCount(year, pool.getPoolId()) > 0) {
-	    			context.put("errorMsg", "Users already imported for 20" + year + "!  Delete and reimport.");
+	    		if (DAO.getUsersCount(pool.getYear(), pool.getPoolId()) > 0) {
+	    			context.put("errorMsg", "Users already imported for 20" + pool.getYear() + "!  Delete and reimport.");
 	    			stack.push(context);
 	    			return "error";
 	    		}
@@ -87,14 +86,14 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    	if (picksCB != null) {
 	    		picksImport = true;
 	    		// Check for games imported
-	    		if (DAO.getNFLPlayoffsGamesCount(year) == 0) {
-	    			context.put("errorMsg", "NFLPlayoffs Games not imported for 20" + year + "!  Import Bowl Games.");
+	    		if (DAO.getNFLPlayoffsGamesCount(pool.getYear()) == 0) {
+	    			context.put("errorMsg", "NFLPlayoffs Games not imported for 20" + pool.getYear() + "!  Import Bowl Games.");
 	    			stack.push(context);
 	    			return "error";
 	    		}
 	    		// Check for picks already imported
-	    		if (DAO.getPicksCount(year, pool.getPoolId()) > 0) {
-	    			context.put("errorMsg", "Picks already imported for 20" + year + "!  Delete and reimport.");
+	    		if (DAO.getPicksCount(pool.getYear(), pool.getPoolId()) > 0) {
+	    			context.put("errorMsg", "Picks already imported for 20" + pool.getYear() + "!  Delete and reimport.");
 	    			stack.push(context);
 	    			return "error";
 	    		}
@@ -102,8 +101,8 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    	if (gamesCB != null) {
 	    		nflPlayoffsGamesImport = true; 
 	    		// Check for games already imported
-	    		if (DAO.getNFLPlayoffsGamesCount(year) > 0) {
-	    			context.put("errorMsg", "NFLPlayoffs Games already imported for 20" + year + "!  Delete and reimport.");
+	    		if (DAO.getNFLPlayoffsGamesCount(pool.getYear()) > 0) {
+	    			context.put("errorMsg", "NFLPlayoffs Games already imported for 20" + pool.getYear() + "!  Delete and reimport.");
 	    			stack.push(context);
 	    			return "error";
 	    		}
@@ -128,7 +127,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	
 	private void importUsersAndPicks(HSSFWorkbook hWorkbook) {
 		List<Pick> picksList = new ArrayList<Pick>();
-		List<User> userList = DAO.getUsersList(year, pool.getPoolId());
+		List<User> userList = DAO.getUsersList(pool.getYear(), pool.getPoolId());
 		try {  
 			HSSFSheet sheet = hWorkbook.getSheetAt(0);
 	        System.out.println(sheet.getSheetName());
@@ -152,7 +151,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        		System.out.println(userName);
 	        		//int userId = 0;
 	        		if (usersImport) {
-	        			DAO.createUser(userName, year, pool.getPoolId());
+	        			DAO.createUser(userName, pool.getYear(), pool.getPoolId());
 	        		}
 	        		if (picksImport) {
 	        			User user = null;
@@ -164,7 +163,8 @@ public class ImportAction extends ActionSupport implements SessionAware {
         				}
 	        			Iterator<Cell> cellIter = row.cellIterator();
 	        			// Get first game index - assume consecutive indexes
-	        			int gameIndex = DAO.useYearClause(year) ? DAO.getFirstGameIndexForAYear(year) : 1;
+	        			int gameIndex = 0;
+	        			int firstGameIndex = DAO.getFirstGameIndexForAYear(pool.getYear());
 	        			while (cellIter.hasNext()){
 	        				Cell cell = (Cell)cellIter.next();
 	        				if (cell.getColumnIndex() == 0 || cell.getColumnIndex() == 1) {
@@ -182,10 +182,21 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        				if (totalPoints != null) {
 	        					break;
 	        				}
+	        				// Special case for 2018 since the game indices are not in the same order for
+	        				// spreadsheet import and making picks through app
+	        				int pickGameIndex = firstGameIndex + gameIndex;
+	        				if (pool.getYear() == 18) {
+	        					if (gameIndex == 0 || gameIndex == 2) {
+	        						pickGameIndex += 1;
+	        					}
+	        					else if (gameIndex == 1 || gameIndex == 3) {
+	        						pickGameIndex -= 1;
+	        					}
+	        				}
 	        				if ((pick != null)) {
-	        					System.out.print("PICK" + gameIndex + ": " + pick.toUpperCase() + " ");
+	        					System.out.print("PICK" + pickGameIndex + ": " + pick.toUpperCase() + " ");
 	        					//DAO.createPick(user.getUserId(), gameIndex, pick.toUpperCase());
-	        					picksList.add(new Pick(0, user.getUserId(), gameIndex, pick.toUpperCase(), 
+	        					picksList.add(new Pick(0, user.getUserId(), pickGameIndex, pick.toUpperCase(), 
 	        						pool.getPoolId(), new Timestamp(new Date().getTime())));
 	        				}
 	        				gameIndex++;
@@ -230,13 +241,13 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		        		String pointsValueString = getStringFromCell(pointsValueRow, cell.getColumnIndex());
 		        		pointsValueString = pointsValueString.split(" ")[0].replace("(", "");
 		        		int pointsValue = Integer.parseInt(pointsValueString);
-		        		DAO.createNFLPlayoffsGame(gameDesc, pointsValue, year);
+		        		DAO.createNFLPlayoffsGame(gameDesc, pointsValue, pool.getYear());
 	        		}
 	        		
 	        		// Manually add Champ games and SB
-	        		DAO.createNFLPlayoffsGame("AFC Champ", 10, year);
-	        		DAO.createNFLPlayoffsGame("NFC Champ", 10, year);
-	        		DAO.createNFLPlayoffsGame("Super Bowl", 20, year);
+	        		DAO.createNFLPlayoffsGame("AFC Champ", 10, pool.getYear());
+	        		DAO.createNFLPlayoffsGame("NFC Champ", 10, pool.getYear());
+	        		DAO.createNFLPlayoffsGame("Super Bowl", 20, pool.getYear());
 	        		break;
 	        	}
 	        }
