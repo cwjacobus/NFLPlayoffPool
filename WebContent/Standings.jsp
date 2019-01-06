@@ -28,10 +28,10 @@
 	<tr class="odd"><th></th><th>Name</th>
 	<c:choose>
 		<c:when test="${maxPoints == true}">
-			<th><a href="getStandings?maxPoints=true&year=${year}&name=${name}" class="odd">Max</a></th><th><a href="getStandings?maxPoints=false&year=${year}&name=${name}" class="odd">Pts</a></th>
+			<th><a href="getStandings?maxPoints=true&year=${year}&name=${name}&poolId=${sessionScope.pool.poolId}" class="odd">Max</a></th><th><a href="getStandings?maxPoints=false&year=${year}&name=${name}&poolId=${sessionScope.pool.poolId}" class="odd">Pts</a></th>
 		</c:when>
 		<c:otherwise>
-			<th><a href="getStandings?maxPoints=false&year=${year}&name=${name}" class="odd">Pts</a></th><th><a href="getStandings?maxPoints=true&year=${year}&name=${name}" class="odd">Max</a></th>
+			<th><a href="getStandings?maxPoints=false&year=${year}&name=${name}&poolId=${sessionScope.pool.poolId}" class="odd">Pts</a></th><th><a href="getStandings?maxPoints=true&year=${year}&name=${name}&poolId=${sessionScope.pool.poolId}" class="odd">Max</a></th>
 		</c:otherwise>
 	</c:choose>
 	</tr>

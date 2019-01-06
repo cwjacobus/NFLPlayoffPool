@@ -59,7 +59,7 @@ select u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g whe
 
 
 // Get pick distribution
-select g.description, p.winner, count(*) from Pick p, NFLPLayoffsGame g where g.gameIndex = p.gameId group by g.description, p.winner order by g.gameIndex, count(*) desc;
+select g.description, p.winner, count(*) from Pick p, NFLPLayoffsGame g where g.gameIndex = p.gameId and poolid=6 group by g.description, p.winner order by g.gameIndex, count(*) desc;
 
 // Get Max
 select u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g where p.userId= u.userId and g.gameIndex = p.gameId and ((g.completed = true and p.winner = g.winner) or (g.completed = false and p.winner not in (select Loser from NFLPLayoffsGame where Loser is not null))) group by u.UserName order by sum(g.PointsValue) desc, u.UserName;

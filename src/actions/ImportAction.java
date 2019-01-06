@@ -126,6 +126,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	}
 	
 	private void importUsersAndPicks(HSSFWorkbook hWorkbook) {
+		// Does not like when first line is blank
 		List<Pick> picksList = new ArrayList<Pick>();
 		List<User> userList = DAO.getUsersList(pool.getYear(), pool.getPoolId());
 		try {  
@@ -167,7 +168,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        			int firstGameIndex = DAO.getFirstGameIndexForAYear(pool.getYear());
 	        			while (cellIter.hasNext()){
 	        				Cell cell = (Cell)cellIter.next();
-	        				if (cell.getColumnIndex() == 0 || cell.getColumnIndex() == 1) {
+	        				if (cell.getColumnIndex() == 0) {
 	        					continue;
 	        				}
 	        				String pick = getStringFromCell(row, cell.getColumnIndex());
@@ -352,26 +353,27 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		else if (nflTeam.equalsIgnoreCase("ARIZ") || nflTeam.equalsIgnoreCase("ARI") || nflTeam.equalsIgnoreCase("AZ")) {
 			nflTeam = "ARZ";
 		}
-		else if (nflTeam.equalsIgnoreCase("BALT")) {
+		else if (nflTeam.equalsIgnoreCase("BALT") || nflTeam.equalsIgnoreCase("BALTIMORE")) {
 			nflTeam = "BAL";
 		}
-		else if (nflTeam.equalsIgnoreCase("INDY")) {
+		else if (nflTeam.equalsIgnoreCase("INDY") || nflTeam.equalsIgnoreCase("COLTS")) {
 			nflTeam = "IND";
 		}
 		else if (nflTeam.equalsIgnoreCase("DENV")) {
 			nflTeam = "DEN";
 		}
-		else if (nflTeam.equalsIgnoreCase("SEAT") || nflTeam.equalsIgnoreCase("SEATTLE")) {
+		else if (nflTeam.equalsIgnoreCase("SEAT") || nflTeam.equalsIgnoreCase("SEATTLE") || 
+				nflTeam.equalsIgnoreCase("SEAHAWKS") || nflTeam.equalsIgnoreCase("SEATLE")) {
 			nflTeam = "SEA";
 		}
 		else if (nflTeam.equalsIgnoreCase("WASH")) {
 			nflTeam = "WAS";
 		}
-		else if (nflTeam.equalsIgnoreCase("HOUSTON")) {
+		else if (nflTeam.equalsIgnoreCase("HOUSTON") || nflTeam.equalsIgnoreCase("HOUS")) {
 			nflTeam = "HOU";
 		}
-		else if (nflTeam.equalsIgnoreCase("LA") || nflTeam.equalsIgnoreCase("RAMS")  || nflTeam.equalsIgnoreCase("LAR")) {
-			nflTeam = "LARAMS";
+		else if (nflTeam.equalsIgnoreCase("LARAMS") || nflTeam.equalsIgnoreCase("RAMS")) {
+			nflTeam = "LAR";
 		}
 		else if (nflTeam.equalsIgnoreCase("PHILLY") || nflTeam.equalsIgnoreCase("PHILA")) {
 			nflTeam = "PHI";
@@ -399,6 +401,15 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		}
 		else if (nflTeam.equalsIgnoreCase("JAC")) {
 			nflTeam = "JAX";
+		}
+		else if (nflTeam.equalsIgnoreCase("DALLAS")) {
+			nflTeam = "DAL";
+		}
+		else if (nflTeam.equalsIgnoreCase("CHARGERS")) {
+			nflTeam = "LAC";
+		}
+		else if (nflTeam.equalsIgnoreCase("BEARS") || nflTeam.equalsIgnoreCase("CHICAGO")) {
+			nflTeam = "CHI";
 		}
 		
 		return nflTeam;
