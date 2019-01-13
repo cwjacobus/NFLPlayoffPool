@@ -29,7 +29,6 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 	
 	private static final long serialVersionUID = 1L;
 	private Boolean maxPoints;
-	private Integer year = null;
 	private String name;
 	Map<String, Object> userSession;
 	private Integer poolId = null;
@@ -39,13 +38,11 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 		ValueStack stack = ActionContext.getContext().getValueStack();
 	    Map<String, Object> context = new HashMap<String, Object>();
 		
-		userSession.put("year", year);
-		DAO.setConnection(year);
-		if (DAO.useYearClause(year)) {
-			pool = DAO.getPool(poolId);
-			userSession.put("pool", pool);
-		}
-		User user  = DAO.getUser(name, year, poolId);
+		DAO.setConnection();
+		pool = DAO.getPool(poolId);
+		userSession.put("pool", pool);
+		userSession.put("year", pool.getYear());
+		User user  = DAO.getUser(name, pool.getYear(), poolId);
 		if (user != null || name.equalsIgnoreCase("admin")) { // Always allow admin to login to import users
 			userSession.put("user", user);
 		}
@@ -54,8 +51,8 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 			stack.push(context);
 			return "error";
 		}
-		TreeMap<String, Standings> standings = DAO.getStandings(maxPoints, year, poolId);
-		List<NFLPlayoffsGame> nflPlayoffsGames = DAO.getNFLPlayoffsGamesList(year);
+		TreeMap<String, Standings> standings = DAO.getStandings(maxPoints, pool.getYear(), poolId);
+		List<NFLPlayoffsGame> nflPlayoffsGames = DAO.getNFLPlayoffsGamesList(pool.getYear());
 		//Iterate through standings to make formatted display string
 		Iterator<Entry<String, Standings>> it = standings.entrySet().iterator();
     	int standingsIndex = 1;
@@ -81,7 +78,7 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 	    }
 	    context.put("allowAdmin", allowAdmin);  
 	    SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy HH:mm");
-	    Date date1 = sdf.parse("01-05-20" + (year + 1) + " 3:00"); // Time of first game in 2019
+	    Date date1 = sdf.parse("01-05-20" + (pool.getYear() + 1) + " 3:00"); // Time of first game in 2019
 	    Calendar cal = Calendar.getInstance();
 	   //TBD check times of games
 	    if ((user != null && user.isAdmin()) || (nflPlayoffsGames.size() > 0 && date1.after(cal.getTime()))) {
@@ -91,7 +88,7 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 	    	userSession.put("readOnly", true);
 	    }
 	    stack.push(context);
-	    System.out.println("Login: " + name + " year: " + year + " poolId: " + poolId + " time: " + new Timestamp(new Date().getTime()));
+	    System.out.println("Login: " + name + " year: " + pool.getYear() + " poolId: " + poolId + " time: " + new Timestamp(new Date().getTime()));
 	    return "success";
 	}
 
@@ -109,14 +106,6 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 
 	public void setName(String name) {
 	   this.name = name;
-	}
-	
-	public Integer getYear() {
-		return year;
-	}
-
-	public void setYear(Integer year) {
-	   this.year = year;
 	}
 	
 	public Integer getPoolId() {
