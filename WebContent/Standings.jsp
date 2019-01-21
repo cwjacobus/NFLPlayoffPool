@@ -77,7 +77,7 @@
   	</a>
   	<br><br>
   	<c:if test = "${allowAdmin}">
-  		<a href="/NFLPlayoffPool/manageGames?year=${year}&name=${name}">Manage NFL Playoff Games</a>
+  		<a href="/NFLPlayoffPool/manageGames">Manage NFL Playoffs Games</a>
   		<br>
   		<h3>Import Data</h3>
   		<form action="import">

@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
@@ -52,7 +51,8 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 			return "error";
 		}
 		TreeMap<String, Standings> standings = DAO.getStandings(maxPoints, pool.getYear(), poolId);
-		List<NFLPlayoffsGame> nflPlayoffsGames = DAO.getNFLPlayoffsGamesList(pool.getYear());
+		HashMap<Integer, NFLPlayoffsGame> nflPlayoffsGameMap = DAO.getNFLPlayoffsGamesMap(pool.getYear());
+		userSession.put("nflPlayoffsGameMap", nflPlayoffsGameMap);
 		//Iterate through standings to make formatted display string
 		Iterator<Entry<String, Standings>> it = standings.entrySet().iterator();
     	int standingsIndex = 1;
@@ -81,7 +81,7 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 	    Date date1 = sdf.parse("01-05-20" + (pool.getYear() + 1) + " 3:00"); // Time of first game in 2019
 	    Calendar cal = Calendar.getInstance();
 	   //TBD check times of games
-	    if ((user != null && user.isAdmin()) || (nflPlayoffsGames.size() > 0 && date1.after(cal.getTime()))) {
+	    if ((user != null && user.isAdmin()) || (nflPlayoffsGameMap.size() > 0 && date1.after(cal.getTime()))) {
 	    	userSession.put("readOnly", false);
 	    }
 	    else {

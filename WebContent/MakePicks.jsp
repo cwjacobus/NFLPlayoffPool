@@ -7,14 +7,14 @@
 <head>
 	<title>NFL Playoffs Pool - Make Picks</title>
 	<style type="text/css">
-	.win {
-		color: green;
-		font-weight: bold;
-	}
-	.lose {
-		color: red;
-		font-weight: bold;
-	}
+		.win {
+			color: green;
+			font-weight: bold;
+		}
+		.lose {
+			color: red;
+			font-weight: bold;
+		}
 	</style>
 	
 	<script type="text/javascript">
@@ -221,17 +221,47 @@
   	</c:if>
   	<br><br>
   	<c:choose>
-  	<c:when test="${fn:length(userPicks) > 0}">
-  	Picks:<br>
-  		<c:forEach var="pick" items="${userPicks}">
-  			${pick.winner}
+  	<c:when test="${fn:length(picksMap[sessionScope.user.userId]) > 0}">
+  	My Picks:<br>
+  		<c:forEach var="pick" items="${picksMap[sessionScope.user.userId]}">
+  			<c:set var="winLoseClass" value="class='win'"/>
+  			<c:if test="${!nflPlayoffsGameMap[pick.gameId].completed}">
+  				<c:set var="winLoseClass" value=""/>
+  			</c:if>
+  			<c:if test="${(nflPlayoffsGameMap[pick.gameId].winner != pick.winner && nflPlayoffsGameMap[pick.gameId].completed)
+  							|| (!nflPlayoffsGameMap[pick.gameId].completed && fn:contains(eliminatedTeams, pick.winner))}">
+  				<c:set var="winLoseClass" value="class='lose'"/>
+  			</c:if>
+  			<span ${winLoseClass}>${pick.winner}</span>
   		</c:forEach>
-  		
   	</c:when>
   	<c:otherwise>
   		No picks made
   	</c:otherwise>
   	</c:choose>
+  	<br><br>
+  	<c:if test="${sessionScope.readOnly || sessionScope.user.admin}">
+  		All Picks<br>
+  		<table>
+  		<tr><th>User</th><th colspan=4>Wild card</th><th colspan=4>Division</th><th colspan=2>Champ</th><th align=left>Super Bowl</th></tr>
+  		<c:forEach var="picks" items="${picksMap}">
+  			<tr>
+  			<td>${usersMap[picks.key].userName}</td>
+  			<c:forEach var="pick" items="${picks.value}">
+  				<c:set var="winLoseClass" value="class='win'"/>
+  				<c:if test="${!nflPlayoffsGameMap[pick.gameId].completed}">
+  					<c:set var="winLoseClass" value=""/>
+  				</c:if>
+  				<c:if test="${(nflPlayoffsGameMap[pick.gameId].winner != pick.winner && nflPlayoffsGameMap[pick.gameId].completed)
+  								|| (!nflPlayoffsGameMap[pick.gameId].completed && fn:contains(eliminatedTeams, pick.winner))}">
+  					<c:set var="winLoseClass" value="class='lose'"/>
+  				</c:if>
+  				<td align=center ${winLoseClass}>${pick.winner}</td>
+  			</c:forEach>
+  			</tr>
+  		</c:forEach>
+  		</table>
+  	</c:if>
   	</form>
 	</body>
 </html>

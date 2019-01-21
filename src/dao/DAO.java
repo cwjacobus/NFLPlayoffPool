@@ -109,8 +109,22 @@ public class DAO {
 		}
 	}
 	
-	public static List<NFLPlayoffsGame> getNFLPlayoffsGamesList(Integer year) {
-		List<NFLPlayoffsGame>nflPlayoffsGameList = new ArrayList<NFLPlayoffsGame>();
+	public static List<String> getEliminatedTeams(Integer year) {
+		List<String> eliminatedTeams = new ArrayList<String>();
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT loser FROM NFLPlayoffsGame where " + getYearClause(year, null));
+			while (rs.next()) {
+				eliminatedTeams.add(rs.getString(1));
+			}
+		}
+		catch (SQLException e) {
+		}
+		return eliminatedTeams;
+	}
+	
+	public static HashMap<Integer, NFLPlayoffsGame> getNFLPlayoffsGamesMap(Integer year) {
+		HashMap<Integer, NFLPlayoffsGame> nflPlayoffsGameMap = new HashMap<Integer, NFLPlayoffsGame>();
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM NFLPlayoffsGame where " + getYearClause(year, null));
@@ -118,12 +132,12 @@ public class DAO {
 			while (rs.next()) {
 				nflPlayoffsGame = new NFLPlayoffsGame(rs.getInt("GameIndex"), rs.getString("Description"), rs.getString("Winner"),
 					rs.getString("Loser"), rs.getInt("PointsValue"), rs.getBoolean("Completed"), rs.getInt("Year"));
-				nflPlayoffsGameList.add(nflPlayoffsGame);
+				nflPlayoffsGameMap.put(nflPlayoffsGame.getGameIndex(), nflPlayoffsGame);
 			}
 		}
 		catch (SQLException e) {
 		}
-		return nflPlayoffsGameList;
+		return nflPlayoffsGameMap;
 	}
 	
 	public static TreeMap<String, Standings> getStandings(boolean maxPoints, Integer year, Integer poolId) {
@@ -384,8 +398,7 @@ public class DAO {
 		catch (Exception ex) {
         }
 		try {
-			String connString = "jdbc:mysql://localhost/nflplayoffspool";
-			connString += "?user=root&password=PASSWORD&useSSL=false";
+			String connString = "jdbc:mysql://localhost/nflplayoffspool?user=root&password=PASSWORD&useSSL=false&allowPublicKeyRetrieval=true";
 			conn = DriverManager.getConnection(connString);
 		}
 		catch (SQLException ex) {
@@ -396,7 +409,7 @@ public class DAO {
 	}
 	
 	public static List<User> getUsersList(Integer year, Integer poolId) {
-		List<User>userList = new ArrayList<User>();
+		List<User> userList = new ArrayList<User>();
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM User where " + getYearClause(year, poolId));
@@ -411,6 +424,24 @@ public class DAO {
 			e.printStackTrace();
 		}
 		return userList;
+	}
+	
+	public static HashMap<Integer, User> getUsersMap(Integer poolId) {
+		 HashMap<Integer, User> userMap = new HashMap<Integer, User>();
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM User where poolId = " + poolId);
+			User user;
+			while (rs.next()) {
+				user = new User(rs.getInt("UserId"), rs.getString("UserName"), rs.getString("LastName"), rs.getString("FirstName"), 
+					rs.getString("Email"), rs.getInt("Year"), rs.getBoolean("admin"));
+				userMap.put(user.getUserId(), user);
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return userMap;
 	}
 	
 	public static User getUser(String name, Integer year, Integer poolId) {

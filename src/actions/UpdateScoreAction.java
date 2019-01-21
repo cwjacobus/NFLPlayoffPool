@@ -1,36 +1,31 @@
 package actions;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.opensymphony.xwork2.ActionContext;
+import org.apache.struts2.interceptor.SessionAware;
+
 import com.opensymphony.xwork2.ActionSupport;
-import com.opensymphony.xwork2.util.ValueStack;
 
 import dao.DAO;
 import data.NFLPlayoffsGame;
+import data.Pool;
 
-
-public class UpdateScoreAction extends ActionSupport {
+public class UpdateScoreAction extends ActionSupport implements SessionAware {
 	
 	private static final long serialVersionUID = 1L;
 	private String winner;
 	private String loser;
 	private Integer gameIndex;
-	private Integer year;
+	Map<String, Object> userSession;
+	Pool pool;
 
 	public String execute() throws Exception {
+		pool = (Pool)userSession.get("pool");
 		DAO.updateScore(winner, loser, gameIndex);
-		
-		List<NFLPlayoffsGame> nflPlayoffsGameList = DAO.getNFLPlayoffsGamesList(year);
-		
-		ValueStack stack = ActionContext.getContext().getValueStack();
-	    Map<String, Object> context = new HashMap<String, Object>();
-
-	    context.put("nflPlayoffsGameList", nflPlayoffsGameList);
-	    stack.push(context);
-		
+		Thread.sleep(1000);
+		HashMap<Integer, NFLPlayoffsGame> nflPlayoffsGameMap = DAO.getNFLPlayoffsGamesMap(pool.getYear());
+		userSession.put("nflPlayoffsGameMap", nflPlayoffsGameMap);
 	    return "success";
 	}
 	   
@@ -58,12 +53,8 @@ public class UpdateScoreAction extends ActionSupport {
 		this.gameIndex = gameIndex;
 	}
 	
-	public Integer getYear() {
-		return year;
-	}
-
-	public void setYear(Integer year) {
-	   this.year = year;
+	public void setSession(Map<String, Object> session) {
+		   this.userSession = session ;
 	}
 
 }

@@ -42,8 +42,6 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	boolean nflPlayoffsGamesImport = false;
 	
 	Map<String, Object> userSession;
-	
-	//Integer year;
 	Pool pool;
 	
 	public String execute() throws Exception {	

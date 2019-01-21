@@ -18,9 +18,7 @@ import com.opensymphony.xwork2.ActionSupport;
 
 
 public class MakePicksAction extends ActionSupport implements SessionAware {
-	
 	private static final long serialVersionUID = 1L;
-	
 	Map<String, Object> userSession;
 	User user;
 	Pool pool;
@@ -36,8 +34,11 @@ public class MakePicksAction extends ActionSupport implements SessionAware {
 		user = (User) userSession.get("user");
 		pool = (Pool) userSession.get("pool");
 		Map<Integer, List<Pick>> picksMap = DAO.getPicksMap(pool);
-	    List<Pick> userPicks = picksMap.get(user.getUserId());
-	    context.put("userPicks", userPicks);
+	    HashMap<Integer, User> usersMap = DAO.getUsersMap(pool.getPoolId());
+	    List<String> eliminatedTeams = DAO.getEliminatedTeams(pool.getYear());
+	    context.put("picksMap", picksMap);
+	    context.put("usersMap", usersMap);
+	    context.put("eliminatedTeams", eliminatedTeams);
 	    stack.push(context);
 	    return "success";
 	}
