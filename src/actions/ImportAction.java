@@ -222,14 +222,14 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        Row pointsValueRow;
 	        while (rowIterator.hasNext()) {
 	        	Row row = rowIterator.next();
-	        	String gameDesc = getStringFromCell(row, 2);
+	        	String gameDesc = getStringFromCell(row, 1);
 	        	if (gameDesc!= null && gameDesc.indexOf("@") != -1) {
 	        		rowIterator.next();
 	        		pointsValueRow = rowIterator.next();
 	        		Iterator<Cell> cellIter = row.cellIterator();
 	        		while (cellIter.hasNext()){
 	        			Cell cell = cellIter.next();
-	        			if (cell.getColumnIndex() == 0 || cell.getColumnIndex() == 1) {
+	        			if (cell.getColumnIndex() == 0/* || cell.getColumnIndex() == 1*/) {
 	        				continue;
 	        			}
 	        			gameDesc = cell.getStringCellValue();
@@ -379,7 +379,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		else if (nflTeam.equalsIgnoreCase("TENN") || nflTeam.equalsIgnoreCase("TITANS")) {
 			nflTeam = "TEN";
 		}
-		else if (nflTeam.equalsIgnoreCase("BILLS")) {
+		else if (nflTeam.equalsIgnoreCase("BILLS") || nflTeam.equalsIgnoreCase("BUFF")) {
 			nflTeam = "BUF";
 		}
 		else if (nflTeam.equalsIgnoreCase("SAINTS") || nflTeam.equalsIgnoreCase("NEW ORLEANS")) {

@@ -19,8 +19,12 @@
 	
 	<script type="text/javascript">
 
+    /*
+    2018
     var nfcTeams = {1: "NO", 2: "LAR", 3: "CHI", 4: "DAL", 5: "SEA", 6: "PHI"};
-	var afcTeams = {1: "KC", 2: "NE", 3: "HOU", 4: "BAL", 5: "LAC", 6: "IND"};
+	var afcTeams = {1: "KC", 2: "NE", 3: "HOU", 4: "BAL", 5: "LAC", 6: "IND"}; */
+	var nfcTeams = {1: "SF", 2: "GB", 3: "NO", 4: "PHI", 5: "SEA", 6: "MIN"};
+	var afcTeams = {1: "BAL", 2: "KC", 3: "NE", 4: "HOU", 5: "BUF", 6: "TEN"};
 	/*for (var key in nfcTeams) {
 		alert("key " + key + " has value " + nfcTeams[key]);
 	}*/
@@ -33,21 +37,22 @@
 	}
 
     function initializeWC() {
+    	/* Assumes playoff games are imported as AFC 4v5, 3v6 and NFC 4v5, 3v6*/
+    	addDropDown('', 0, '', afcwc2);
+		addDropDown(afcTeams[4], 4, 'afcwc2', afcwc2);
+		addDropDown(afcTeams[5], 5, 'afcwc2', afcwc2);
+		
 		addDropDown('', 0, '', afcwc1);
 		addDropDown(afcTeams[3], 3, 'afcwc1', afcwc1);
 		addDropDown(afcTeams[6], 6, 'afcwc1', afcwc1);
 		
-		addDropDown('', 0, '', afcwc2);
-		addDropDown(afcTeams[4], 4, 'afcwc2', afcwc2);
-		addDropDown(afcTeams[5], 5, 'afcwc2', afcwc2);
+		addDropDown('', 0, '', nfcwc2);
+		addDropDown(nfcTeams[4], 4, 'nfcwc2', nfcwc2);
+		addDropDown(nfcTeams[5], 5, 'nfcwc2', nfcwc2);
 
 		addDropDown('', 0, '', nfcwc1);
 		addDropDown(nfcTeams[3], 3, 'nfcwc1', nfcwc1);
 		addDropDown(nfcTeams[6], 6, 'nfcwc1', nfcwc1);
-
-		addDropDown('', 0, '', nfcwc2);
-		addDropDown(nfcTeams[4], 4, 'nfcwc2', nfcwc2);
-		addDropDown(nfcTeams[5], 5, 'nfcwc2', nfcwc2);
     }
 
 	function getDivValues(conference) {

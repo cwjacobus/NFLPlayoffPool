@@ -39,6 +39,11 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 		
 		DAO.setConnection();
 		pool = DAO.getPool(poolId);
+		if (pool == null) {
+			context.put("errorMsg", "Pool does not exist!");
+			stack.push(context);
+			return "error";
+		}
 		userSession.put("pool", pool);
 		userSession.put("year", pool.getYear());
 		User user  = DAO.getUser(name, pool.getYear(), poolId);
