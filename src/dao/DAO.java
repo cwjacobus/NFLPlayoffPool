@@ -162,14 +162,14 @@ public class DAO {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
-		/*List<User> usersList = getUsersList(conn);
+		List<User> usersList = getUsersWithPicksList(year, poolId != null ? poolId : null);
 		// Merge any users with 0 points
+		// TBD Make sure users with 0 pts and maxPts > 0 display correctly
 		for (User u : usersList) {
-			if (!standings.containsValue(u.getUserName())) {
-				standings.put("00:" + u.getUserName()+ ":0", u.getUserName());
+			if (!ptsStandings.containsKey(u.getUserName())) {
+				ptsStandings.put(u.getUserName(), "00");
 			}
-		}*/
-		
+		}
 		// Max points
 		try {
 			Statement stmt = conn.createStatement();
@@ -192,25 +192,24 @@ public class DAO {
 			e.printStackTrace();
 		}
 		
-		Iterator<Entry<String, String>> it = maxPtsStandings.entrySet().iterator();
+		Iterator<Entry<String, String>> it = ptsStandings.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, String> line = (Map.Entry<String, String>)it.next();
-			String points = ptsStandings.get(line.getKey());
-			if (points == null) {
-				points="00";
+			String maxPts = maxPtsStandings.get(line.getKey());
+			if (maxPts == null) {
+				maxPts= "00";
 			}
 			Standings stand = new Standings();
 			stand.setUserName(line.getKey());
-			stand.setPoints(points);
-			stand.setMaxPoints(line.getValue());
+			stand.setPoints(line.getValue());
+			stand.setMaxPoints(maxPts);
 			if (maxPoints) {
-				standings.put(line.getValue() + ":" + line.getKey(), stand);
+				standings.put(maxPts + ":" + line.getKey(), stand);
 			}
 			else {
-				standings.put(points + ":" + line.getKey(), stand);
+				standings.put(line.getValue() + ":" + line.getKey(), stand);
 			}
 		}
-				
 		return standings;
 	}
 	
@@ -416,7 +415,25 @@ public class DAO {
 			User user;
 			while (rs.next()) {
 				user = new User(rs.getInt("UserId"), rs.getString("UserName"), rs.getString("LastName"), rs.getString("FirstName"), 
-					rs.getString("Email"), rs.getInt("Year"), rs.getBoolean("admin"));
+					rs.getString("Email"), rs.getInt("Year"), rs.getBoolean("admin"), rs.getInt("PoolId"));
+				userList.add(user);
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return userList;
+	}
+	
+	public static List<User> getUsersWithPicksList(Integer year, Integer poolId) {
+		List<User>userList = new ArrayList<User>();
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT distinct u.* FROM User u, Pick p where u.userId = p.userId and p.poolID = " + poolId);
+			User user;
+			while (rs.next()) {
+				user = new User(rs.getInt("UserId"), rs.getString("UserName"), rs.getString("LastName"), rs.getString("FirstName"), 
+					rs.getString("Email"), rs.getInt("Year"), rs.getBoolean("admin"), rs.getInt("PoolId"));
 				userList.add(user);
 			}
 		}
@@ -434,7 +451,7 @@ public class DAO {
 			User user;
 			while (rs.next()) {
 				user = new User(rs.getInt("UserId"), rs.getString("UserName"), rs.getString("LastName"), rs.getString("FirstName"), 
-					rs.getString("Email"), rs.getInt("Year"), rs.getBoolean("admin"));
+					rs.getString("Email"), rs.getInt("Year"), rs.getBoolean("admin"), rs.getInt("PoolId"));
 				userMap.put(user.getUserId(), user);
 			}
 		}
@@ -452,7 +469,7 @@ public class DAO {
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				user = new User(rs.getInt("UserId"), rs.getString("UserName"), rs.getString("LastName"), rs.getString("FirstName"), 
-					rs.getString("Email"), rs.getInt("Year"), rs.getBoolean("admin"));
+					rs.getString("Email"), rs.getInt("Year"), rs.getBoolean("admin"), rs.getInt("PoolId"));
 			}
 		}
 		catch (SQLException e) {

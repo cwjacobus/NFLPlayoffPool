@@ -284,7 +284,7 @@ public class MigrateDB {
 			User user;
 			while (rs.next()) {
 				user = new User(rs.getInt("UserId"), rs.getString("UserName"), rs.getString("LastName"), rs.getString("FirstName"), 
-					rs.getString("Email"), year, false);
+					rs.getString("Email"), year, false, rs.getInt("PoolId"));
 				userMap.put(user.getUserId(), user);
 			}
 		}

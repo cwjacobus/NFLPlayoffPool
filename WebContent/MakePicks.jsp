@@ -37,22 +37,21 @@
 	}
 
     function initializeWC() {
-    	/* Assumes playoff games are imported as AFC 4v5, 3v6 and NFC 4v5, 3v6*/
-    	addDropDown('', 0, '', afcwc2);
-		addDropDown(afcTeams[4], 4, 'afcwc2', afcwc2);
-		addDropDown(afcTeams[5], 5, 'afcwc2', afcwc2);
-		
 		addDropDown('', 0, '', afcwc1);
 		addDropDown(afcTeams[3], 3, 'afcwc1', afcwc1);
 		addDropDown(afcTeams[6], 6, 'afcwc1', afcwc1);
 		
-		addDropDown('', 0, '', nfcwc2);
-		addDropDown(nfcTeams[4], 4, 'nfcwc2', nfcwc2);
-		addDropDown(nfcTeams[5], 5, 'nfcwc2', nfcwc2);
+		addDropDown('', 0, '', afcwc2);
+		addDropDown(afcTeams[4], 4, 'afcwc2', afcwc2);
+		addDropDown(afcTeams[5], 5, 'afcwc2', afcwc2);
 
 		addDropDown('', 0, '', nfcwc1);
 		addDropDown(nfcTeams[3], 3, 'nfcwc1', nfcwc1);
 		addDropDown(nfcTeams[6], 6, 'nfcwc1', nfcwc1);
+
+		addDropDown('', 0, '', nfcwc2);
+		addDropDown(nfcTeams[4], 4, 'nfcwc2', nfcwc2);
+		addDropDown(nfcTeams[5], 5, 'nfcwc2', nfcwc2);
     }
 
 	function getDivValues(conference) {
