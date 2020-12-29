@@ -16,6 +16,7 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import data.NFLPlayoffsGame;
+import data.NFLTeam;
 import data.Pick;
 import data.Pool;
 import data.Standings;
@@ -149,6 +150,22 @@ public class DAO {
 		catch (SQLException e) {
 		}
 		return nflPlayoffsGameMap;
+	}
+	
+	public static HashMap<String, NFLTeam> getNFLTeamsMap() {
+		HashMap<String, NFLTeam> nflTeamsMap = new HashMap<String, NFLTeam>();
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM NFLTeam order by ShortName ");
+			NFLTeam nflTeam;
+			while (rs.next()) {
+				nflTeam = new NFLTeam(rs.getInt("NFLTeamId"), rs.getString("LongName"), rs.getString("ShortName"));
+				nflTeamsMap.put(nflTeam.getShortName(), nflTeam);
+			}
+		}
+		catch (SQLException e) {
+		}
+		return nflTeamsMap;
 	}
 	
 	public static TreeMap<String, Standings> getStandings(boolean maxPoints, Integer year, Integer poolId) {

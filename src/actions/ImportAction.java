@@ -31,6 +31,7 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
 
 import dao.DAO;
+import data.NFLTeam;
 import data.Pick;
 import data.Pool;
 import data.User;
@@ -62,7 +63,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		}
 		pool = (Pool) userSession.get("pool");
 		System.out.println("Import: " + pool.getYear());
-		
+		HashMap<String, NFLTeam> nflTeamsMap = (HashMap<String, NFLTeam>)userSession.get("nflTeamsMap");
 		InputStream input = ServletActionContext.getServletContext().getResourceAsStream("/WEB-INF/NFLPlayoffsPool.properties");
 		Properties prop = new Properties();
 		prop.load(input);

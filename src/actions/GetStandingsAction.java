@@ -18,6 +18,7 @@ import com.opensymphony.xwork2.ActionSupport;
 
 import dao.DAO;
 import data.NFLPlayoffsGame;
+import data.NFLTeam;
 import data.Pool;
 import data.Standings;
 import data.User;
@@ -55,6 +56,8 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 			stack.push(context);
 			return "error";
 		}
+		HashMap<String, NFLTeam> nflTeamsMap = DAO.getNFLTeamsMap();
+		userSession.put("nflTeamsMap", nflTeamsMap);
 		TreeMap<String, Standings> standings = DAO.getStandings(maxPoints, pool.getYear(), poolId);
 		HashMap<Integer, NFLPlayoffsGame> nflPlayoffsGameMap = DAO.getNFLPlayoffsGamesMap(pool.getYear());
 		userSession.put("nflPlayoffsGameMap", nflPlayoffsGameMap);
