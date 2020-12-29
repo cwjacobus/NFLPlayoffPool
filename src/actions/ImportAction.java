@@ -1,8 +1,12 @@
 package actions;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,6 +23,8 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
@@ -35,11 +41,13 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	private String usersCB;
 	private String gamesCB;
 	private String picksCB;
+	private String teamsCB;
 	private String inputFileName;
 	
 	boolean usersImport = false;
 	boolean picksImport = false;
 	boolean nflPlayoffsGamesImport = false;
+	boolean nflTeamsImport = false;
 	
 	Map<String, Object> userSession;
 	Pool pool;
@@ -60,13 +68,13 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		prop.load(input);
 		System.out.println("Input file path: " + prop.getProperty("inputFilePath"));
 		
-	    System.out.println("Import " + usersCB + " " + gamesCB + " " + picksCB + " " + inputFileName);
-	    if (usersCB == null && gamesCB == null && picksCB == null) {
+	    System.out.println("Import " + usersCB + " " + gamesCB + " " + picksCB + " " + teamsCB + " " + inputFileName);
+	    if (usersCB == null && gamesCB == null && picksCB == null && teamsCB == null) {
 	    	context.put("errorMsg", "Nothing selected to import!");
 	    	stack.push(context);
 	    	return "error";
 	    }
-	    else if (inputFileName == null || inputFileName.length() == 0) {
+	    else if ((inputFileName == null || inputFileName.length() == 0) && (usersCB != null || gamesCB != null || picksCB != null)) {
 	    	context.put("errorMsg", "No file selected to import!");
 	    	stack.push(context);
 	    	return "error";
@@ -105,10 +113,13 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    			return "error";
 	    		}
 	    	}
+	    	if (teamsCB != null) {
+	    		nflTeamsImport = true;
+	    		// Check for teams already imported
+	    	}
 	    	if (usersImport || picksImport || nflPlayoffsGamesImport) {
 	    		File inputFile = new File(prop.getProperty("inputFilePath") + inputFileName);
 	    		FileInputStream spreadSheetFile = new FileInputStream(inputFile);
-	     
 	    		//Create Workbook instance holding reference to .xls file
 	    		HSSFWorkbook hWorkbook = new HSSFWorkbook(spreadSheetFile);
 	    		if (usersImport || picksImport) {
@@ -116,8 +127,11 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    		}
 	    		if (nflPlayoffsGamesImport) {
 	    			importNFLPlayoffsGames(hWorkbook);
-	    		} 
+	    		}
 	    	}
+	    	if (nflTeamsImport) {
+	    		importNFLTeamsFromWS();
+    		}
 	    }
 	    stack.push(context);
 	    return "success";
@@ -256,6 +270,36 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    }
 	}
 	
+	private void importNFLTeamsFromWS() {
+		System.out.println("Import teams from web service");
+		try {
+			String uRL;
+			uRL = "https://api.sportsdata.io/v3/nfl/scores/json/Teams?key=eea45baa72c64bc6bd003b511e9e36d0";
+			URL obj = new URL(uRL);
+			HttpURLConnection con = (HttpURLConnection)obj.openConnection();
+			//int responseCode = con.getResponseCode();
+			//System.out.println("Response Code : " + responseCode);
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream())); 
+			JSONArray all = new JSONArray(in.readLine());
+			in.close();
+			System.out.println(all.length() + " teams");
+			
+			for (int i = 0; i < all.length(); i++) {
+				JSONObject team = all.getJSONObject(i);
+			    
+				String fullName = team.getString("FullName");
+				String shortName = team.getString("Key");
+				String teamId = team.getString("TeamID");
+				System.out.println(teamId + ": " + shortName + ":" + fullName);
+				
+				DAO.createNFLTeam(teamId, fullName, shortName);
+			}
+		 }
+		catch (Exception e) {
+			e.printStackTrace();
+        }
+	}
+	
 	private String getStringFromCell(Row row, int index) {
 		String cellString;
 		   
@@ -323,6 +367,14 @@ public class ImportAction extends ActionSupport implements SessionAware {
 
 	public void setPicksCB(String picksCB) {
 		this.picksCB = picksCB;
+	}
+	
+	public String getTeamsCB() {
+		return teamsCB;
+	}
+
+	public void setTeamsCB(String teamsCB) {
+		this.teamsCB = teamsCB;
 	}
 
 	public String getInputFileName() {

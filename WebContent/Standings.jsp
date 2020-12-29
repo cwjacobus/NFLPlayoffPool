@@ -85,6 +85,7 @@
   			<input type="checkbox" name="usersCB" value="Users"> Users<br>
 			<input type="checkbox" name="gamesCB" value="Games"> Games<br>
 			<input type="checkbox" name="picksCB" value="Picks"> Picks<br>
+			<input type="checkbox" name="teamsCB" value="Teams"> Teams (from WS)<br>
 			<input type="submit" value="Import">
   		</form>
   		<br>

@@ -38,6 +38,13 @@ PoolName varchar(255) NOT NULL,
 Year int(5) NOT NULL
 );
 
+CREATE TABLE NFLTeam
+(
+NFLTeamId int(5) PRIMARY KEY,
+LongName varchar(50) NOT NULL,
+ShortName varchar(5) NOT NULL
+);
+
 insert into pool (PoolId, PoolName, Year) values (1, 'Sculley 2014', 14);
 insert into pool (PoolId, PoolName, Year) values (2, 'Sculley 2015', 15);
 insert into pool (PoolId, PoolName, Year) values (3, 'Sculley 2016', 16);

@@ -67,6 +67,17 @@ public class DAO {
 		}
 	}
 	
+	public static void createNFLTeam(String teamId, String fullName, String shortName) {
+		try {
+			Statement stmt = conn.createStatement();
+			String insertSQL = "INSERT INTO NFLTeam VALUES (" + teamId + ", '" + fullName + "', '" + shortName + "');";
+			stmt.execute(insertSQL);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static int createUser(String userName, Integer year, Integer poolId) {
 		int userId = 0;
 		try {
