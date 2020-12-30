@@ -56,11 +56,11 @@ public class DAO {
 		}
 	}
 	
-	public static void createNFLPlayoffsGame(String description, Integer pointsValue, Integer year) {
+	public static void createNFLPlayoffsGame(String description, Integer pointsValue, Integer year, Integer home, Integer visitor) {
 		try {
 			Statement stmt = conn.createStatement();
-			String insertSQL = "INSERT INTO NFLPlayoffsGame (Description, PointsValue, Completed, Year) VALUES ('" + 
-				description + "', " + pointsValue + ", 0, " + year + ");";
+			String insertSQL = "INSERT INTO NFLPlayoffsGame (Description, PointsValue, Completed, Year, Home, Visitor) VALUES ('" + 
+				description + "', " + pointsValue + ", 0, " + year + "," + home + "," + visitor + ");";
 			stmt.execute(insertSQL);
 		}
 		catch (SQLException e) {
@@ -143,7 +143,7 @@ public class DAO {
 			NFLPlayoffsGame nflPlayoffsGame;
 			while (rs.next()) {
 				nflPlayoffsGame = new NFLPlayoffsGame(rs.getInt("GameIndex"), rs.getString("Description"), rs.getString("Winner"),
-					rs.getString("Loser"), rs.getInt("PointsValue"), rs.getBoolean("Completed"), rs.getInt("Year"));
+					rs.getString("Loser"), rs.getInt("PointsValue"), rs.getBoolean("Completed"), rs.getInt("Year"), rs.getInt("Home"), rs.getInt("Visitor"));
 				nflPlayoffsGameMap.put(nflPlayoffsGame.getGameIndex(), nflPlayoffsGame);
 			}
 		}

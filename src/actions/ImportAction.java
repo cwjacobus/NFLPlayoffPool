@@ -235,11 +235,12 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        System.out.println(sheet.getSheetName());
 	        Iterator<Row> rowIterator = sheet.iterator();
 	        Row pointsValueRow;
+	        Row seedingRow;
 	        while (rowIterator.hasNext()) {
 	        	Row row = rowIterator.next();
 	        	String gameDesc = getStringFromCell(row, 1);
 	        	if (gameDesc!= null && gameDesc.indexOf("@") != -1) {
-	        		rowIterator.next();
+	        		seedingRow = rowIterator.next();
 	        		pointsValueRow = rowIterator.next();
 	        		Iterator<Cell> cellIter = row.cellIterator();
 	        		while (cellIter.hasNext()){
@@ -249,19 +250,41 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        			}
 	        			gameDesc = cell.getStringCellValue();
 	        			if (gameDesc == null || gameDesc.length() == 0) {
+	        				continue;
+	        			}
+	        			if (gameDesc.equalsIgnoreCase("SB")) {
 	        				break;
 	        			}
 	        			System.out.println(gameDesc);
 		        		String pointsValueString = getStringFromCell(pointsValueRow, cell.getColumnIndex());
+		        		String seedingString = getStringFromCell(seedingRow, cell.getColumnIndex());
+		        		String homeTeam;
+		        		String visitorTeam;
+		        		int homeSeed;
+		        		int visitorSeed;
+		        		String[] teamsStringArray = gameDesc.split("@");
+		        		if (teamsStringArray.length == 2) {
+		        			homeTeam = teamsStringArray[1];
+		        			visitorTeam = teamsStringArray[0];
+		        		}
+		        		String[] seedingStringArray = seedingString.split("@");
+		        		if (seedingStringArray.length == 2) {
+		        			//homeSeed = Integer.parseInt(seedingStringArray[1]);
+		        			//visitorSeed = Integer.parseInt(seedingStringArray[0]);
+		        		}
 		        		pointsValueString = pointsValueString.split(" ")[0].replace("(", "");
 		        		int pointsValue = Integer.parseInt(pointsValueString);
-		        		DAO.createNFLPlayoffsGame(gameDesc, pointsValue, pool.getYear());
+		        		//int homeNFLPlayoffTeamID = DAO.createNFLPlayoffsTeam();
+		        		//int visitorNFLPlayoffTeamID = DAO.createNFLPlayoffsTeam();
+		        		DAO.createNFLPlayoffsGame(gameDesc, pointsValue, pool.getYear(), null, null);
 	        		}
 	        		
 	        		// Manually add Champ games and SB
-	        		DAO.createNFLPlayoffsGame("AFC Champ", 10, pool.getYear());
-	        		DAO.createNFLPlayoffsGame("NFC Champ", 10, pool.getYear());
-	        		DAO.createNFLPlayoffsGame("Super Bowl", 20, pool.getYear());
+	        		DAO.createNFLPlayoffsGame("AFC R2", 5, pool.getYear(), null, null); // Placeholder for second R2 game
+	        		DAO.createNFLPlayoffsGame("NFC R2", 5, pool.getYear(), null, null); // Placeholder for second R2 game
+	        		DAO.createNFLPlayoffsGame("AFC Champ", 10, pool.getYear(), null, null);
+	        		DAO.createNFLPlayoffsGame("NFC Champ", 10, pool.getYear(), null, null);
+	        		DAO.createNFLPlayoffsGame("Super Bowl", 20, pool.getYear(), null, null);
 	        		break;
 	        	}
 	        }

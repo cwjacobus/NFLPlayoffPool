@@ -18,7 +18,9 @@ Winner varchar(25),
 Loser varchar(25),
 PointsValue int,
 Completed boolean,
-Year int(5)
+Year int(5),
+Home int(5),
+Visitor int(5)
 );
 
 CREATE TABLE Pick
@@ -43,6 +45,14 @@ CREATE TABLE NFLTeam
 NFLTeamId int(5) PRIMARY KEY,
 LongName varchar(50) NOT NULL,
 ShortName varchar(5) NOT NULL
+);
+
+CREATE TABLE NFLPlayoffsTeam
+(
+NFLPlayoffsTeamId int(5) PRIMARY KEY AUTO_INCREMENT,
+NFLTeamId int(5) NOT NULL,
+Seed int(5) NOT NULL,
+Year int(5) NOT NULL
 );
 
 insert into pool (PoolId, PoolName, Year) values (1, 'Sculley 2014', 14);

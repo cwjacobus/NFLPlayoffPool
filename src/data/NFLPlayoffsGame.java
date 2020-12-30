@@ -9,8 +9,10 @@ public class NFLPlayoffsGame {
 	private int pointsValue;
 	private boolean completed;
 	private int year;
+	private int home;
+	private int visitor;
 	
-	public NFLPlayoffsGame (int gameIndex, String description, String winner, String loser, int pointsValue, boolean completed, int year) {
+	public NFLPlayoffsGame (int gameIndex, String description, String winner, String loser, int pointsValue, boolean completed, int year, int home, int visitor) {
 		this.gameIndex = gameIndex;
 		this.description = description;
 		this.winner = winner;
@@ -18,6 +20,8 @@ public class NFLPlayoffsGame {
 		this.pointsValue = pointsValue;
 		this.completed = completed;
 		this.year = year;
+		this.home = home;
+		this.visitor = visitor;
 	}
 	
 	public boolean isCompleted() {
@@ -73,6 +77,22 @@ public class NFLPlayoffsGame {
 
 	public void setYear(int year) {
 		this.year = year;
+	}
+
+	public int getHome() {
+		return home;
+	}
+
+	public void setHome(int home) {
+		this.home = home;
+	}
+
+	public int getVisitor() {
+		return visitor;
+	}
+
+	public void setVisitor(int visitor) {
+		this.visitor = visitor;
 	}
 
 }
