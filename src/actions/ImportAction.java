@@ -63,7 +63,6 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		}
 		pool = (Pool) userSession.get("pool");
 		System.out.println("Import: " + pool.getYear());
-		HashMap<String, NFLTeam> nflTeamsMap = (HashMap<String, NFLTeam>)userSession.get("nflTeamsMap");
 		InputStream input = ServletActionContext.getServletContext().getResourceAsStream("/WEB-INF/NFLPlayoffsPool.properties");
 		Properties prop = new Properties();
 		prop.load(input);
@@ -236,6 +235,8 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        Iterator<Row> rowIterator = sheet.iterator();
 	        Row pointsValueRow;
 	        Row seedingRow;
+	        @SuppressWarnings("unchecked")
+			HashMap<String, NFLTeam> nflTeamsMap = (HashMap<String, NFLTeam>)userSession.get("nflTeamsMap");
 	        while (rowIterator.hasNext()) {
 	        	Row row = rowIterator.next();
 	        	String gameDesc = getStringFromCell(row, 1);
@@ -258,30 +259,36 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        			System.out.println(gameDesc);
 		        		String pointsValueString = getStringFromCell(pointsValueRow, cell.getColumnIndex());
 		        		String seedingString = getStringFromCell(seedingRow, cell.getColumnIndex());
-		        		String homeTeam;
-		        		String visitorTeam;
-		        		int homeSeed;
-		        		int visitorSeed;
+		        		String homeTeam = null;
+		        		String visitorTeam = null;
+		        		Integer homeSeed = null;
+		        		Integer visitorSeed = null;
 		        		String[] teamsStringArray = gameDesc.split("@");
 		        		if (teamsStringArray.length == 2) {
-		        			homeTeam = teamsStringArray[1];
-		        			visitorTeam = teamsStringArray[0];
+		        			homeTeam = teamsStringArray[1].trim();
+		        			visitorTeam = teamsStringArray[0].trim();
 		        		}
 		        		String[] seedingStringArray = seedingString.split("@");
 		        		if (seedingStringArray.length == 2) {
-		        			//homeSeed = Integer.parseInt(seedingStringArray[1]);
-		        			//visitorSeed = Integer.parseInt(seedingStringArray[0]);
+		        			homeSeed = convertSeedingStringToNumber(seedingStringArray[1]);
+		        			visitorSeed = convertSeedingStringToNumber(seedingStringArray[0]);
 		        		}
 		        		pointsValueString = pointsValueString.split(" ")[0].replace("(", "");
 		        		int pointsValue = Integer.parseInt(pointsValueString);
-		        		//int homeNFLPlayoffTeamID = DAO.createNFLPlayoffsTeam();
-		        		//int visitorNFLPlayoffTeamID = DAO.createNFLPlayoffsTeam();
-		        		DAO.createNFLPlayoffsGame(gameDesc, pointsValue, pool.getYear(), null, null);
+		        		System.out.println("VIS: " + visitorTeam + " " + visitorSeed + " HOME: " + homeTeam + " " + homeSeed);
+		        		Integer homeNflTeamId = nflTeamsMap.get(homeTeam) != null ? nflTeamsMap.get(homeTeam).getNflTeamId() : null;
+		        		Integer homeNFLPlayoffTeamID = DAO.createNFLPlayoffsTeam(homeNflTeamId, homeSeed, pool.getYear());
+		        		Integer visitorNFLPlayoffTeamID = null;
+		        		if (visitorTeam != null && visitorTeam.length() > 0 && visitorSeed != null) {
+		        			Integer visitorNflTeamId = nflTeamsMap.get(visitorTeam) != null ? nflTeamsMap.get(visitorTeam).getNflTeamId() : null;
+		        			visitorNFLPlayoffTeamID = DAO.createNFLPlayoffsTeam(visitorNflTeamId, visitorSeed, pool.getYear());
+		        		}
+		        		DAO.createNFLPlayoffsGame(gameDesc, pointsValue, pool.getYear(), homeNFLPlayoffTeamID, visitorNFLPlayoffTeamID);
 	        		}
 	        		
 	        		// Manually add Champ games and SB
-	        		DAO.createNFLPlayoffsGame("AFC R2", 5, pool.getYear(), null, null); // Placeholder for second R2 game
-	        		DAO.createNFLPlayoffsGame("NFC R2", 5, pool.getYear(), null, null); // Placeholder for second R2 game
+	        		DAO.createNFLPlayoffsGame("AFC R2 Game 2", 5, pool.getYear(), null, null); // Placeholder for second R2 game
+	        		DAO.createNFLPlayoffsGame("NFC R2 Game 2", 5, pool.getYear(), null, null); // Placeholder for second R2 game
 	        		DAO.createNFLPlayoffsGame("AFC Champ", 10, pool.getYear(), null, null);
 	        		DAO.createNFLPlayoffsGame("NFC Champ", 10, pool.getYear(), null, null);
 	        		DAO.createNFLPlayoffsGame("Super Bowl", 20, pool.getYear(), null, null);
@@ -365,59 +372,24 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    return cellNumber; 
 	}
 	
-	// DB
-	
-
-
-	public String getUsersCB() {
-		return usersCB;
+	private Integer convertSeedingStringToNumber(String seedingString) {
+		Integer seedingNumber = null;
+		String convertedSeedingString = "";
+		if (seedingString != null && seedingString.length() > 0) {
+			for (int i = 0 ; i < seedingString.length(); i++) {
+				if (Character.isDigit(seedingString.charAt(i))) {
+					convertedSeedingString += seedingString.charAt(i);
+				}
+			}
+			if (convertedSeedingString.length() > 0) {
+				seedingNumber = Integer.parseInt(convertedSeedingString);
+			}
+		}
+		return seedingNumber;		
 	}
-
-	public void setUsersCB(String usersCB) {
-		this.usersCB = usersCB;
-	}
-
-	public String getGamesCB() {
-		return gamesCB;
-	}
-
-	public void setGamesCB(String gamesCB) {
-		this.gamesCB = gamesCB;
-	}
-
-	public String getPicksCB() {
-		return picksCB;
-	}
-
-	public void setPicksCB(String picksCB) {
-		this.picksCB = picksCB;
-	}
-	
-	public String getTeamsCB() {
-		return teamsCB;
-	}
-
-	public void setTeamsCB(String teamsCB) {
-		this.teamsCB = teamsCB;
-	}
-
-	public String getInputFileName() {
-		return inputFileName;
-	}
-
-	public void setInputFileName(String inputFileName) {
-		this.inputFileName = inputFileName;
-	}
-	
-	@Override
-    public void setSession(Map<String, Object> sessionMap) {
-        this.userSession = sessionMap;
-    }
 	
 	private String getNFLTeamFromAlias(String alias) {
-		
 		String nflTeam = alias;
-		
 		if (nflTeam.equalsIgnoreCase("CINC") || nflTeam.equalsIgnoreCase("CINCI") || nflTeam.equalsIgnoreCase("CINCY")) {
 			nflTeam = "CIN";
 		}
@@ -485,8 +457,53 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		else if (nflTeam.equalsIgnoreCase("BEARS") || nflTeam.equalsIgnoreCase("CHICAGO")) {
 			nflTeam = "CHI";
 		}
-		
 		return nflTeam;
-		
 	}
+
+	public String getUsersCB() {
+		return usersCB;
+	}
+
+	public void setUsersCB(String usersCB) {
+		this.usersCB = usersCB;
+	}
+
+	public String getGamesCB() {
+		return gamesCB;
+	}
+
+	public void setGamesCB(String gamesCB) {
+		this.gamesCB = gamesCB;
+	}
+
+	public String getPicksCB() {
+		return picksCB;
+	}
+
+	public void setPicksCB(String picksCB) {
+		this.picksCB = picksCB;
+	}
+	
+	public String getTeamsCB() {
+		return teamsCB;
+	}
+
+	public void setTeamsCB(String teamsCB) {
+		this.teamsCB = teamsCB;
+	}
+
+	public String getInputFileName() {
+		return inputFileName;
+	}
+
+	public void setInputFileName(String inputFileName) {
+		this.inputFileName = inputFileName;
+	}
+	
+	@Override
+    public void setSession(Map<String, Object> sessionMap) {
+        this.userSession = sessionMap;
+    }
+	
+	
 }

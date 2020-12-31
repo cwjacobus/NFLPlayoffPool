@@ -68,6 +68,25 @@ public class DAO {
 		}
 	}
 	
+	public static int createNFLPlayoffsTeam(Integer nflTeamId, Integer seed, int year) {
+		int nflPlayoffTeamId = 0;
+		try {
+			Statement stmt = conn.createStatement();
+			String insertSQL = "INSERT INTO NFLPlayoffsTeam (NFLTeamId, Seed, Year) VALUES (" + 
+					nflTeamId + ", " + seed + ", " + year + ");";
+			stmt.execute(insertSQL);
+			ResultSet rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
+			if (rs.next()) {
+				nflPlayoffTeamId = rs.getInt(1);
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return nflPlayoffTeamId;
+	}
+	
+	
 	public static void createNFLTeam(String teamId, String fullName, String shortName) {
 		try {
 			Statement stmt = conn.createStatement();
