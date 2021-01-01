@@ -19,8 +19,10 @@ public class SavePicksAction extends ActionSupport implements SessionAware {
 	private static final long serialVersionUID = 1L;
 	private String afcwc1;
 	private String afcwc2;
+	private String afcwc3;
 	private String nfcwc1;
 	private String nfcwc2;
+	private String nfcwc3;
 	private String afcdiv1;
 	private String afcdiv2;
 	private String nfcdiv1;
@@ -34,7 +36,7 @@ public class SavePicksAction extends ActionSupport implements SessionAware {
 	User user;
 	int firstGameIndex;
 	
-	String[] gameCodes = {"afcwc1", "afcwc2", "nfcwc1", "nfcwc2", "afcdiv1", "afcdiv2", "nfcdiv1", "nfcdiv2", "afcchamp", "nfcchamp", "sb"};
+	String[] gameCodes = {"afcwc1", "afcwc2", "afcwc3", "nfcwc1", "nfcwc2", "nfcwc3", "afcdiv1", "afcdiv2", "nfcdiv1", "nfcdiv2", "afcchamp", "nfcchamp", "sb"};
 
 	public String execute() throws Exception {
 		ValueStack stack = ActionContext.getContext().getValueStack();
@@ -44,10 +46,11 @@ public class SavePicksAction extends ActionSupport implements SessionAware {
 			stack.push(context);
 			return "error";
 		}
-		if (afcwc1 == null || afcwc1.equals("0") || afcwc2 == null || afcwc2.equals("0") || nfcwc1 == null || nfcwc1.equals("0") || 
-			nfcwc2 == null || nfcwc2.equals("0") || afcdiv1 == null || afcdiv1.equals("0") || afcdiv2 == null || afcdiv2.equals("0") || 
-			nfcdiv1 == null || nfcdiv1.equals("0") || nfcdiv2 == null || nfcdiv2.equals("0") || afcchamp == null || afcchamp.equals("0") ||
-			nfcchamp == null || nfcchamp.equals("0") || sb == null || sb.equals("0")) {
+		if (afcwc1 == null || afcwc1.equals("0") || afcwc2 == null || afcwc2.equals("0") || afcwc3 == null || afcwc3.equals("0") ||
+			nfcwc1 == null || nfcwc1.equals("0") || nfcwc2 == null || nfcwc2.equals("0") || nfcwc3 == null || nfcwc3.equals("0") ||
+			afcdiv1 == null || afcdiv1.equals("0") || afcdiv2 == null || afcdiv2.equals("0") || nfcdiv1 == null || nfcdiv1.equals("0") || 
+			nfcdiv2 == null || nfcdiv2.equals("0") || afcchamp == null || afcchamp.equals("0") || nfcchamp == null || nfcchamp.equals("0") || 
+			sb == null || sb.equals("0")) {
 				context.put("errorMsg", "All games must be picked!");
 				stack.push(context);
 				return "error";
@@ -68,8 +71,10 @@ public class SavePicksAction extends ActionSupport implements SessionAware {
 		
 		makePick(afcwc1);
 		makePick(afcwc2);
+		makePick(afcwc3);
 		makePick(nfcwc1);
 		makePick(nfcwc2);
+		makePick(nfcwc3);
 		makePick(afcdiv1);
 		makePick(afcdiv2);
 		makePick(nfcdiv1);
@@ -104,6 +109,14 @@ public class SavePicksAction extends ActionSupport implements SessionAware {
 	public void setAfcwc2(String afcwc2) {
 		this.afcwc2 = afcwc2;
 	}
+	
+	public String getAfcwc3() {
+		return afcwc3;
+	}
+
+	public void setAfcwc3(String afcwc3) {
+		this.afcwc3 = afcwc3;
+	}
 
 	public String getNfcwc1() {
 		return nfcwc1;
@@ -119,6 +132,14 @@ public class SavePicksAction extends ActionSupport implements SessionAware {
 
 	public void setNfcwc2(String nfcwc2) {
 		this.nfcwc2 = nfcwc2;
+	}
+	
+	public String getNfcwc3() {
+		return nfcwc3;
+	}
+
+	public void setNfcwc3(String nfcwc3) {
+		this.nfcwc3 = nfcwc3;
 	}
 
 	public String getAfcdiv1() {

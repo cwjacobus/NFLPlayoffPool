@@ -291,8 +291,8 @@
   	<br><br>
   	<c:if test="${sessionScope.readOnly || sessionScope.user.admin}">
   		All Picks<br>
-  		<table>
-  		<tr><th>User</th><th colspan=4>Wild card</th><th colspan=4>Division</th><th colspan=2>Champ</th><th align=left>Super Bowl</th></tr>
+  		<table border=1>
+  		<tr><th>User</th><th colspan=6>Wild card</th><th colspan=4>Division</th><th colspan=2>Champ</th><th align=left>SB</th></tr>
   		<c:forEach var="picks" items="${picksMap}">
   			<tr>
   			<td>${usersMap[picks.key].userName}</td>

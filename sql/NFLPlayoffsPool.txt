@@ -85,3 +85,9 @@ select u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g whe
 delete from pick where gameid in (select gameindex from nflplayoffsgame where year = X);
 delete from nflplayoffsgame where year = X;
 delete from user where year = X;
+
+// Get Chris' Super Bowl Picks (Sculley pool 14-X)
+select u.username, p.winner, p.poolid from pick p, user u where p.userid = u.userid and p.userid in (select userid from user where username like '%Jacobus%' or username like '%CJ1%' or username like '%CJ2%') and p.gameid in (select gameindex from nflplayoffsgame where description like '%Super%') order by poolid;
+
+// Get Chris' Champ Game Picks (Sculley pool 14-X)
+select u.username, p.winner, p.poolid from pick p, user u where p.userid = u.userid and p.userid in (select userid from user where username like '%Jacobus%' or username like '%CJ1%' or username like '%CJ2%') and p.gameid in (select gameindex from nflplayoffsgame where description like '%Champ%') order by poolid, username;
