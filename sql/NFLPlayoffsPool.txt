@@ -20,7 +20,9 @@ PointsValue int,
 Completed boolean,
 Year int(5),
 Home int(5),
-Visitor int(5)
+Visitor int(5),
+WinnerTeamId int(5),
+LoserTeamId int(5)
 );
 
 CREATE TABLE Pick
