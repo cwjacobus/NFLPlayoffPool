@@ -11,17 +11,22 @@ public class NFLPlayoffsGame {
 	private int year;
 	private int home;
 	private int visitor;
+	private int winnerTeamId;
+	private int loserTeamId;
 	
-	public NFLPlayoffsGame (int gameIndex, String description, String winner, String loser, int pointsValue, boolean completed, int year, int home, int visitor) {
-		this.gameIndex = gameIndex;
-		this.description = description;
-		this.winner = winner;
-		this.loser = loser;
-		this.pointsValue = pointsValue;
-		this.completed = completed;
-		this.year = year;
-		this.home = home;
-		this.visitor = visitor;
+	public NFLPlayoffsGame (int gameIndex, String description, String winner, String loser, int pointsValue, boolean completed, int year, 
+		int home, int visitor, int winnerTeamId, int loserTeamId) {
+			this.gameIndex = gameIndex;
+			this.description = description;
+			this.winner = winner;
+			this.loser = loser;
+			this.pointsValue = pointsValue;
+			this.completed = completed;
+			this.year = year;
+			this.home = home;
+			this.visitor = visitor;
+			this.winnerTeamId = winnerTeamId;
+			this.loserTeamId = loserTeamId;
 	}
 	
 	public boolean isCompleted() {
@@ -93,6 +98,22 @@ public class NFLPlayoffsGame {
 
 	public void setVisitor(int visitor) {
 		this.visitor = visitor;
+	}
+
+	public int getWinnerTeamId() {
+		return winnerTeamId;
+	}
+
+	public void setWinnerTeamId(int winnerTeamId) {
+		this.winnerTeamId = winnerTeamId;
+	}
+
+	public int getLoserTeamId() {
+		return loserTeamId;
+	}
+
+	public void setLoserTeamId(int loserTeamId) {
+		this.loserTeamId = loserTeamId;
 	}
 
 }

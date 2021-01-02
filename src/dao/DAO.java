@@ -16,6 +16,7 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import data.NFLPlayoffsGame;
+import data.NFLPlayoffsTeam;
 import data.NFLTeam;
 import data.Pick;
 import data.Pool;
@@ -162,7 +163,8 @@ public class DAO {
 			NFLPlayoffsGame nflPlayoffsGame;
 			while (rs.next()) {
 				nflPlayoffsGame = new NFLPlayoffsGame(rs.getInt("GameIndex"), rs.getString("Description"), rs.getString("Winner"),
-					rs.getString("Loser"), rs.getInt("PointsValue"), rs.getBoolean("Completed"), rs.getInt("Year"), rs.getInt("Home"), rs.getInt("Visitor"));
+					rs.getString("Loser"), rs.getInt("PointsValue"), rs.getBoolean("Completed"), rs.getInt("Year"), rs.getInt("Home"), rs.getInt("Visitor"),
+					rs.getInt("WinnerTeamId"), rs.getInt("LoserTeamId"));
 				nflPlayoffsGameMap.put(nflPlayoffsGame.getGameIndex(), nflPlayoffsGame);
 			}
 		}
@@ -175,7 +177,7 @@ public class DAO {
 		HashMap<String, NFLTeam> nflTeamsMap = new HashMap<String, NFLTeam>();
 		try {
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM NFLTeam order by ShortName ");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM NFLTeam order by ShortName");
 			NFLTeam nflTeam;
 			while (rs.next()) {
 				nflTeam = new NFLTeam(rs.getInt("NFLTeamId"), rs.getString("LongName"), rs.getString("ShortName"));
@@ -185,6 +187,22 @@ public class DAO {
 		catch (SQLException e) {
 		}
 		return nflTeamsMap;
+	}
+	
+	public static HashMap<String, NFLPlayoffsTeam> getNFLPlayoffsTeamsMap() {
+		HashMap<String, NFLPlayoffsTeam> nflPlayoffsTeamsMap = new HashMap<String, NFLPlayoffsTeam>();
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT nt.ShortName, pt.* FROM NFLPlayoffsTeam pt, NFLTeam nt where pt.nflTeamId = nt.nflTeamId order by nt.ShortName");
+			NFLPlayoffsTeam nflPlayoffsTeam;
+			while (rs.next()) {
+				nflPlayoffsTeam = new NFLPlayoffsTeam(rs.getInt("NFLPlayoffsTeamId"), rs.getInt("NFLTeamId"), rs.getInt("Seed"), rs.getInt("Year"));
+				nflPlayoffsTeamsMap.put(rs.getString("ShortName"), nflPlayoffsTeam);
+			}
+		}
+		catch (SQLException e) {
+		}
+		return nflPlayoffsTeamsMap;
 	}
 	
 	public static TreeMap<String, Standings> getStandings(boolean maxPoints, Integer year, Integer poolId) {
@@ -401,10 +419,12 @@ public class DAO {
 		return numberOfCompletedGames;
 	}
 	
-	public static void updateScore(String winner, String loser, Integer gameIndex) {
+	public static void updateScore(String winner, String loser, Integer winnerTeamId, Integer loserTeamId, Integer gameIndex) {
 		try {
 			Statement stmt = conn.createStatement();
-			stmt.execute("UPDATE NFLPlayoffsGame SET Winner = '" + winner + "',Loser = '" + loser + "',Completed = true WHERE GameIndex = " + gameIndex);
+			String sql = "UPDATE NFLPlayoffsGame SET Winner = '" + winner + "', Loser = '" + loser + "', WinnerTeamId = " + winnerTeamId + 
+					", LoserTeamId = " + loserTeamId + ", Completed = true WHERE GameIndex = " + gameIndex;
+			stmt.execute(sql);
 		}
 		catch (SQLException e) {
 		}

@@ -1,15 +1,24 @@
 package data;
 
 public class NFLPlayoffsTeam {
-	
+	private int nflPlayoffsTeamId;
 	private int nflTeamId;
 	private int seed;
 	private int year;
 	
-	public NFLPlayoffsTeam(int nflTeamId, int seed, int year) {
+	public NFLPlayoffsTeam(int nflPlayoffsTeamId, int nflTeamId, int seed, int year) {
+		this.nflPlayoffsTeamId = nflPlayoffsTeamId;
 		this.nflTeamId = nflTeamId;
 		this.seed = seed;
 		this.year = year;
+	}
+
+	public int getNflPlayoffsTeamId() {
+		return nflPlayoffsTeamId;
+	}
+
+	public void setNflPlayoffsTeamId(int nflPlayoffsTeamId) {
+		this.nflPlayoffsTeamId = nflPlayoffsTeamId;
 	}
 
 	public int getNflTeamId() {
