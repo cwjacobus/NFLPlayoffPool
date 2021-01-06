@@ -250,7 +250,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        				continue;
 	        			}
 	        			gameDesc = cell.getStringCellValue();
-	        			if (gameDesc == null || gameDesc.length() == 0) {
+	        			if (gameDesc == null || gameDesc.length() == 0 || gameDesc.contains("mid")) { // skip empty or "@ mid"
 	        				continue;
 	        			}
 	        			if (gameDesc.equalsIgnoreCase("SB")) {

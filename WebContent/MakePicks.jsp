@@ -26,8 +26,8 @@
 	/* 2019
 	var nfcTeams = {1: "SF", 2: "GB", 3: "NO", 4: "PHI", 5: "SEA", 6: "MIN"};
 	var afcTeams = {1: "BAL", 2: "KC", 3: "NE", 4: "HOU", 5: "BUF", 6: "TEN"};*/
-	var nfcTeams = {1: "GB", 2: "NO", 3: "SEA", 4: "DAL", 5: "TB", 6: "LAR", 7: "CHI"};
-	var afcTeams = {1: "KC", 2: "BUF", 3: "PIT", 4: "TEN", 5: "BAL", 6: "CLE", 7: "MIA"};
+	var nfcTeams = {1: "GB", 2: "NO", 3: "SEA", 4: "WAS", 5: "TB", 6: "LAR", 7: "CHI"};
+	var afcTeams = {1: "KC", 2: "BUF", 3: "PIT", 4: "TEN", 5: "BAL", 6: "CLE", 7: "IND"};
 	/*for (var key in nfcTeams) {
 		alert("key " + key + " has value " + nfcTeams[key]);
 	}*/
