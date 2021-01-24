@@ -8,7 +8,7 @@ import org.apache.struts2.interceptor.SessionAware;
 import com.opensymphony.xwork2.ActionSupport;
 
 import dao.DAO;
-import data.NFLPlayoffsTeam;
+import data.NFLTeam;
 
 public class ManageGamesAction extends ActionSupport implements SessionAware {
 	
@@ -16,8 +16,8 @@ public class ManageGamesAction extends ActionSupport implements SessionAware {
 	Map<String, Object> userSession;
 	
 	public String execute() throws Exception {
-		HashMap<String, NFLPlayoffsTeam> nflPlayoffsTeamsMap =  DAO.getNFLPlayoffsTeamsMap();
-		userSession.put("nflPlayoffsTeamsMap", nflPlayoffsTeamsMap);
+		HashMap<String, NFLTeam> nflTeamsMap =  DAO.getNFLTeamsMap();
+		userSession.put("nflTeamsMap", nflTeamsMap);
 	    return "success";
 	}
 	

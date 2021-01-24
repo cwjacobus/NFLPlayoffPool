@@ -16,7 +16,6 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import data.NFLPlayoffsGame;
-import data.NFLPlayoffsTeam;
 import data.NFLTeam;
 import data.Pick;
 import data.Pool;
@@ -57,37 +56,20 @@ public class DAO {
 		}
 	}
 	
-	public static void createNFLPlayoffsGame(String description, Integer pointsValue, Integer year, Integer home, Integer visitor) {
+	public static void createNFLPlayoffsGame(String description, Integer pointsValue, Integer year, Integer home, Integer visitor, String conference,
+			Integer homeScore, Integer visScore, Double spread, Boolean homeFav, Integer homeSeed, Integer visSeed) {
 		try {
 			Statement stmt = conn.createStatement();
-			String insertSQL = "INSERT INTO NFLPlayoffsGame (Description, PointsValue, Completed, Year, Home, Visitor) VALUES ('" + 
-				description + "', " + pointsValue + ", 0, " + year + "," + home + "," + visitor + ");";
+			String insertSQL = "INSERT INTO NFLPlayoffsGame (Description, PointsValue, Completed, Year, Home, Visitor, Conference, Spread, HomeFav, HomeSeed, " +
+				" VisSeed) VALUES ('" + description + "', " + pointsValue + ", 0, " + year + "," + home + "," + visitor + ", '" + conference + "', " + spread + 
+				", " + homeFav + ", " + homeSeed + ", " + visSeed + ");";
 			stmt.execute(insertSQL);
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public static int createNFLPlayoffsTeam(Integer nflTeamId, Integer seed, int year) {
-		int nflPlayoffTeamId = 0;
-		try {
-			Statement stmt = conn.createStatement();
-			String insertSQL = "INSERT INTO NFLPlayoffsTeam (NFLTeamId, Seed, Year) VALUES (" + 
-					nflTeamId + ", " + seed + ", " + year + ");";
-			stmt.execute(insertSQL);
-			ResultSet rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
-			if (rs.next()) {
-				nflPlayoffTeamId = rs.getInt(1);
-			}
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return nflPlayoffTeamId;
-	}
-	
-	
+		
 	public static void createNFLTeam(String teamId, String fullName, String shortName) {
 		try {
 			Statement stmt = conn.createStatement();
@@ -164,7 +146,7 @@ public class DAO {
 			while (rs.next()) {
 				nflPlayoffsGame = new NFLPlayoffsGame(rs.getInt("GameIndex"), rs.getString("Description"), rs.getString("Winner"),
 					rs.getString("Loser"), rs.getInt("PointsValue"), rs.getBoolean("Completed"), rs.getInt("Year"), rs.getInt("Home"), rs.getInt("Visitor"),
-					rs.getInt("WinnerTeamId"), rs.getInt("LoserTeamId"));
+					rs.getString("Conference"), rs.getInt("HomeScore"), rs.getInt("VisScore"), rs.getDouble("Spread"), rs.getBoolean("HomeFav"), rs.getInt("HomeSeed"), rs.getInt("VisSeed"));
 				nflPlayoffsGameMap.put(nflPlayoffsGame.getGameIndex(), nflPlayoffsGame);
 			}
 		}
@@ -187,22 +169,6 @@ public class DAO {
 		catch (SQLException e) {
 		}
 		return nflTeamsMap;
-	}
-	
-	public static HashMap<String, NFLPlayoffsTeam> getNFLPlayoffsTeamsMap() {
-		HashMap<String, NFLPlayoffsTeam> nflPlayoffsTeamsMap = new HashMap<String, NFLPlayoffsTeam>();
-		try {
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT nt.ShortName, pt.* FROM NFLPlayoffsTeam pt, NFLTeam nt where pt.nflTeamId = nt.nflTeamId order by nt.ShortName");
-			NFLPlayoffsTeam nflPlayoffsTeam;
-			while (rs.next()) {
-				nflPlayoffsTeam = new NFLPlayoffsTeam(rs.getInt("NFLPlayoffsTeamId"), rs.getInt("NFLTeamId"), rs.getInt("Seed"), rs.getInt("Year"));
-				nflPlayoffsTeamsMap.put(rs.getString("ShortName"), nflPlayoffsTeam);
-			}
-		}
-		catch (SQLException e) {
-		}
-		return nflPlayoffsTeamsMap;
 	}
 	
 	public static TreeMap<String, Standings> getStandings(boolean maxPoints, Integer year, Integer poolId) {

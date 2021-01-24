@@ -11,24 +11,34 @@ public class NFLPlayoffsGame {
 	private int year;
 	private int home;
 	private int visitor;
-	private int winnerTeamId;
-	private int loserTeamId;
+	private String conference;
+	private int homeScore;
+	private int visScore;
+	private double spread;
+	private boolean homeFav;
+	private int homeSeed;
+	private int visSeed;
 	
-	public NFLPlayoffsGame (int gameIndex, String description, String winner, String loser, int pointsValue, boolean completed, int year, 
-		int home, int visitor, int winnerTeamId, int loserTeamId) {
-			this.gameIndex = gameIndex;
-			this.description = description;
-			this.winner = winner;
-			this.loser = loser;
-			this.pointsValue = pointsValue;
-			this.completed = completed;
-			this.year = year;
-			this.home = home;
-			this.visitor = visitor;
-			this.winnerTeamId = winnerTeamId;
-			this.loserTeamId = loserTeamId;
+	
+	public NFLPlayoffsGame(int gameIndex, String description, String winner, String loser, int pointsValue, boolean completed, int year, 
+			int home, int visitor, String conference, int homeScore, int visScore, double spread, boolean homeFav, int homeSeed, int visSeed) {
+		this.gameIndex = gameIndex;
+		this.description = description;
+		this.winner = winner;
+		this.loser = loser;
+		this.pointsValue = pointsValue;
+		this.completed = completed;
+		this.year = year;
+		this.home = home;
+		this.visitor = visitor;
+		this.conference = conference;
+		this.homeScore = homeScore;
+		this.visScore = visScore;
+		this.spread = spread;
+		this.homeFav = homeFav;
+		this.homeSeed = homeSeed;
+		this.visSeed = visSeed;
 	}
-	
 	public boolean isCompleted() {
 		return completed;
 	}
@@ -99,21 +109,47 @@ public class NFLPlayoffsGame {
 	public void setVisitor(int visitor) {
 		this.visitor = visitor;
 	}
-
-	public int getWinnerTeamId() {
-		return winnerTeamId;
+	public String getConference() {
+		return conference;
 	}
-
-	public void setWinnerTeamId(int winnerTeamId) {
-		this.winnerTeamId = winnerTeamId;
+	public void setConference(String conference) {
+		this.conference = conference;
 	}
-
-	public int getLoserTeamId() {
-		return loserTeamId;
+	public int getHomeScore() {
+		return homeScore;
 	}
-
-	public void setLoserTeamId(int loserTeamId) {
-		this.loserTeamId = loserTeamId;
+	public void setHomeScore(int homeScore) {
+		this.homeScore = homeScore;
+	}
+	public int getVisScore() {
+		return visScore;
+	}
+	public void setVisScore(int visScore) {
+		this.visScore = visScore;
+	}
+	public double getSpread() {
+		return spread;
+	}
+	public void setSpread(double spread) {
+		this.spread = spread;
+	}
+	public boolean isHomeFav() {
+		return homeFav;
+	}
+	public void setHomeFav(boolean homeFav) {
+		this.homeFav = homeFav;
+	}
+	public int getHomeSeed() {
+		return homeSeed;
+	}
+	public void setHomeSeed(int homeSeed) {
+		this.homeSeed = homeSeed;
+	}
+	public int getVisSeed() {
+		return visSeed;
+	}
+	public void setVisSeed(int visSeed) {
+		this.visSeed = visSeed;
 	}
 
 }

@@ -277,21 +277,20 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		        		int pointsValue = Integer.parseInt(pointsValueString);
 		        		System.out.println("VIS: " + visitorTeam + " " + visitorSeed + " HOME: " + homeTeam + " " + homeSeed);
 		        		Integer homeNflTeamId = nflTeamsMap.get(homeTeam) != null ? nflTeamsMap.get(homeTeam).getNflTeamId() : null;
-		        		Integer homeNFLPlayoffTeamID = DAO.createNFLPlayoffsTeam(homeNflTeamId, homeSeed, pool.getYear());
-		        		Integer visitorNFLPlayoffTeamID = null;
+		        		Integer visitorNflTeamId = null;
 		        		if (visitorTeam != null && visitorTeam.length() > 0 && visitorSeed != null) {
-		        			Integer visitorNflTeamId = nflTeamsMap.get(visitorTeam) != null ? nflTeamsMap.get(visitorTeam).getNflTeamId() : null;
-		        			visitorNFLPlayoffTeamID = DAO.createNFLPlayoffsTeam(visitorNflTeamId, visitorSeed, pool.getYear());
+		        			visitorNflTeamId = nflTeamsMap.get(visitorTeam) != null ? nflTeamsMap.get(visitorTeam).getNflTeamId() : null;
 		        		}
-		        		DAO.createNFLPlayoffsGame(gameDesc, pointsValue, pool.getYear(), homeNFLPlayoffTeamID, visitorNFLPlayoffTeamID);
+		        		// TBD Add conferences and seeds
+		        		DAO.createNFLPlayoffsGame(gameDesc, pointsValue, pool.getYear(), homeNflTeamId, visitorNflTeamId, null, null, null, null, null, homeSeed, visitorSeed);
 	        		}
 	        		
 	        		// Manually add Champ games and SB
-	        		DAO.createNFLPlayoffsGame("AFC R2 Game 2", 5, pool.getYear(), null, null); // Placeholder for second R2 game
-	        		DAO.createNFLPlayoffsGame("NFC R2 Game 2", 5, pool.getYear(), null, null); // Placeholder for second R2 game
-	        		DAO.createNFLPlayoffsGame("AFC Champ", 10, pool.getYear(), null, null);
-	        		DAO.createNFLPlayoffsGame("NFC Champ", 10, pool.getYear(), null, null);
-	        		DAO.createNFLPlayoffsGame("Super Bowl", 20, pool.getYear(), null, null);
+	        		DAO.createNFLPlayoffsGame("AFC R2 Game 2", 5, pool.getYear(), null, null, null, null, null, null, null, 1, null); // Placeholder for second R2 game
+	        		DAO.createNFLPlayoffsGame("NFC R2 Game 2", 5, pool.getYear(), null, null, null, null, null, null, null, 1, null); // Placeholder for second R2 game
+	        		DAO.createNFLPlayoffsGame("AFC Champ", 10, pool.getYear(), null, null, null, null, null, null, null, null, null);
+	        		DAO.createNFLPlayoffsGame("NFC Champ", 10, pool.getYear(), null, null, null, null, null, null, null, null, null);
+	        		DAO.createNFLPlayoffsGame("Super Bowl", 20, pool.getYear(), null, null, null, null, null, null, null, null, null);
 	        		break;
 	        	}
 	        }
