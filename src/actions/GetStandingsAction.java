@@ -86,9 +86,10 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 	    }
 	    context.put("allowAdmin", allowAdmin);  
 	    SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy HH:mm");
+	    // TBD Check pool first game time in db
 	    Date date1 = sdf.parse("01-09-20" + (pool.getYear() + 1) + " 11:00"); // Time of first game in 2019
 	    Calendar cal = Calendar.getInstance();
-	   //TBD check times of games
+	    //TBD check times of games
 	    if ((user != null && user.isAdmin()) || (nflPlayoffsGameMap.size() > 0 && date1.after(cal.getTime()))) {
 	    	userSession.put("readOnly", false);
 	    }

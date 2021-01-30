@@ -60,8 +60,9 @@ public class DAO {
 			Integer homeScore, Integer visScore, Double spread, Boolean homeFav, Integer homeSeed, Integer visSeed) {
 		try {
 			Statement stmt = conn.createStatement();
+			String conferenceString = conference != null ? "'" + conference + "'" : null;
 			String insertSQL = "INSERT INTO NFLPlayoffsGame (Description, PointsValue, Completed, Year, Home, Visitor, Conference, Spread, HomeFav, HomeSeed, " +
-				" VisSeed) VALUES ('" + description + "', " + pointsValue + ", 0, " + year + "," + home + "," + visitor + ", '" + conference + "', " + spread + 
+				" VisSeed) VALUES ('" + description + "', " + pointsValue + ", 0, " + year + "," + home + "," + visitor + ", " + conferenceString + ", " + spread + 
 				", " + homeFav + ", " + homeSeed + ", " + visSeed + ");";
 			stmt.execute(insertSQL);
 		}
@@ -385,11 +386,10 @@ public class DAO {
 		return numberOfCompletedGames;
 	}
 	
-	public static void updateScore(String winner, String loser, Integer winnerTeamId, Integer loserTeamId, Integer gameIndex) {
+	public static void updateScore(String winner, String loser, Integer gameIndex) {
 		try {
 			Statement stmt = conn.createStatement();
-			String sql = "UPDATE NFLPlayoffsGame SET Winner = '" + winner + "', Loser = '" + loser + "', WinnerTeamId = " + winnerTeamId + 
-					", LoserTeamId = " + loserTeamId + ", Completed = true WHERE GameIndex = " + gameIndex;
+			String sql = "UPDATE NFLPlayoffsGame SET Winner = '" + winner + "', Loser = '" + loser + "', Completed = true WHERE GameIndex = " + gameIndex;
 			stmt.execute(sql);
 		}
 		catch (SQLException e) {

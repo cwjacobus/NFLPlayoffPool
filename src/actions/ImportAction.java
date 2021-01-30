@@ -235,15 +235,21 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        Iterator<Row> rowIterator = sheet.iterator();
 	        Row pointsValueRow;
 	        Row seedingRow;
+	        Row conferenceRow = null;
 	        @SuppressWarnings("unchecked")
 			HashMap<String, NFLTeam> nflTeamsMap = (HashMap<String, NFLTeam>)userSession.get("nflTeamsMap");
 	        while (rowIterator.hasNext()) {
 	        	Row row = rowIterator.next();
 	        	String gameDesc = getStringFromCell(row, 1);
+	        	if (gameDesc!= null && gameDesc.contains("Round")) {
+	        		conferenceRow = row;
+	        	}
 	        	if (gameDesc!= null && gameDesc.indexOf("@") != -1) {
 	        		seedingRow = rowIterator.next();
 	        		pointsValueRow = rowIterator.next();
 	        		Iterator<Cell> cellIter = row.cellIterator();
+	        		String conferenceString;
+	        		String conference= null;
 	        		while (cellIter.hasNext()){
 	        			Cell cell = cellIter.next();
 	        			if (cell.getColumnIndex() == 0/* || cell.getColumnIndex() == 1*/) {
@@ -259,6 +265,10 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        			System.out.println(gameDesc);
 		        		String pointsValueString = getStringFromCell(pointsValueRow, cell.getColumnIndex());
 		        		String seedingString = getStringFromCell(seedingRow, cell.getColumnIndex());
+		        		conferenceString = getStringFromCell(conferenceRow, cell.getColumnIndex());
+		        		if (conferenceString != null) {
+		        			conference = conferenceString.contains("AFC") ? "AFC" : "NFC";
+		        		}
 		        		String homeTeam = null;
 		        		String visitorTeam = null;
 		        		Integer homeSeed = null;
@@ -281,15 +291,20 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		        		if (visitorTeam != null && visitorTeam.length() > 0 && visitorSeed != null) {
 		        			visitorNflTeamId = nflTeamsMap.get(visitorTeam) != null ? nflTeamsMap.get(visitorTeam).getNflTeamId() : null;
 		        		}
-		        		// TBD Add conferences and seeds
-		        		DAO.createNFLPlayoffsGame(gameDesc, pointsValue, pool.getYear(), homeNflTeamId, visitorNflTeamId, null, null, null, null, null, homeSeed, visitorSeed);
+		        		DAO.createNFLPlayoffsGame(gameDesc, pointsValue, pool.getYear(), homeNflTeamId, visitorNflTeamId, conference, null, null, null, null, homeSeed, visitorSeed);
+		        		// TBD Add R2 game here
+		        		if (visitorNflTeamId == null) {  // Is a R2 game?
+		        			if (conference.equalsIgnoreCase("AFC")) {
+		        				DAO.createNFLPlayoffsGame("AFC R2 Game 2", 5, pool.getYear(), null, null, "AFC", null, null, null, null, 1, null); // Placeholder for second R2 game
+		        			}
+		        			else {
+		        				DAO.createNFLPlayoffsGame("NFC R2 Game 2", 5, pool.getYear(), null, null, "NFC", null, null, null, null, 1, null); // Placeholder for second R2 game
+		        			}
+		        		}
 	        		}
-	        		
 	        		// Manually add Champ games and SB
-	        		DAO.createNFLPlayoffsGame("AFC R2 Game 2", 5, pool.getYear(), null, null, null, null, null, null, null, 1, null); // Placeholder for second R2 game
-	        		DAO.createNFLPlayoffsGame("NFC R2 Game 2", 5, pool.getYear(), null, null, null, null, null, null, null, 1, null); // Placeholder for second R2 game
-	        		DAO.createNFLPlayoffsGame("AFC Champ", 10, pool.getYear(), null, null, null, null, null, null, null, null, null);
-	        		DAO.createNFLPlayoffsGame("NFC Champ", 10, pool.getYear(), null, null, null, null, null, null, null, null, null);
+	        		DAO.createNFLPlayoffsGame("AFC Champ", 10, pool.getYear(), null, null, "AFC", null, null, null, null, null, null);
+	        		DAO.createNFLPlayoffsGame("NFC Champ", 10, pool.getYear(), null, null, "NFC", null, null, null, null, null, null);
 	        		DAO.createNFLPlayoffsGame("Super Bowl", 20, pool.getYear(), null, null, null, null, null, null, null, null, null);
 	        		break;
 	        	}

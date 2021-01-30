@@ -9,7 +9,6 @@ import com.opensymphony.xwork2.ActionSupport;
 
 import dao.DAO;
 import data.NFLPlayoffsGame;
-import data.NFLTeam;
 import data.Pool;
 
 public class UpdateScoreAction extends ActionSupport implements SessionAware {
@@ -23,11 +22,7 @@ public class UpdateScoreAction extends ActionSupport implements SessionAware {
 
 	public String execute() throws Exception {
 		pool = (Pool)userSession.get("pool");
-		@SuppressWarnings("unchecked")
-		HashMap<String, NFLTeam> nflTeamsMap = (HashMap<String, NFLTeam>)userSession.get("nflTeamsMap");
-		Integer winnerTeamId = nflTeamsMap.get(winner) != null ? nflTeamsMap.get(winner).getNflTeamId() : null;
-		Integer loserTeamId = nflTeamsMap.get(loser) != null ? nflTeamsMap.get(loser).getNflTeamId() : null;
-		DAO.updateScore(winner, loser, winnerTeamId, loserTeamId, gameIndex);
+		DAO.updateScore(winner, loser, gameIndex);
 		Thread.sleep(1000);
 		HashMap<Integer, NFLPlayoffsGame> nflPlayoffsGameMap = DAO.getNFLPlayoffsGamesMap(pool.getYear());
 		userSession.put("nflPlayoffsGameMap", nflPlayoffsGameMap);
