@@ -1,7 +1,6 @@
 package actions;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -85,12 +84,11 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 	    	allowAdmin = true;
 	    }
 	    context.put("allowAdmin", allowAdmin);  
-	    SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy HH:mm");
-	    // TBD Check pool first game time in db
-	    Date date1 = sdf.parse("01-09-20" + (pool.getYear() + 1) + " 11:00"); // Time of first game in 2019
+	    Timestamp firstGameDateTime = DAO.getFirstGameDateTime(pool.getYear());
+	    Date firstGameDate = firstGameDateTime != null ? new Date(firstGameDateTime.getTime()) : null;
 	    Calendar cal = Calendar.getInstance();
 	    //TBD check times of games
-	    if ((user != null && user.isAdmin()) || (nflPlayoffsGameMap.size() > 0 && date1.after(cal.getTime()))) {
+	    if ((user != null && user.isAdmin()) || (nflPlayoffsGameMap.size() > 0 && (firstGameDate != null && firstGameDate.after(cal.getTime())))) {
 	    	userSession.put("readOnly", false);
 	    }
 	    else {

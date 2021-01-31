@@ -57,13 +57,13 @@ public class DAO {
 	}
 	
 	public static void createNFLPlayoffsGame(String description, Integer pointsValue, Integer year, Integer home, Integer visitor, String conference,
-			Integer homeScore, Integer visScore, Double spread, Boolean homeFav, Integer homeSeed, Integer visSeed) {
+			Integer homeScore, Integer visScore, Boolean homeFav, Integer homeSeed, Integer visSeed, Timestamp dateTime) {
 		try {
 			Statement stmt = conn.createStatement();
 			String conferenceString = conference != null ? "'" + conference + "'" : null;
-			String insertSQL = "INSERT INTO NFLPlayoffsGame (Description, PointsValue, Completed, Year, Home, Visitor, Conference, Spread, HomeFav, HomeSeed, " +
-				" VisSeed) VALUES ('" + description + "', " + pointsValue + ", 0, " + year + "," + home + "," + visitor + ", " + conferenceString + ", " + spread + 
-				", " + homeFav + ", " + homeSeed + ", " + visSeed + ");";
+			String insertSQL = "INSERT INTO NFLPlayoffsGame (Description, PointsValue, Completed, Year, Home, Visitor, Conference, HomeFav, HomeSeed, " +
+				" VisSeed, DateTime) VALUES ('" + description + "', " + pointsValue + ", 0, " + year + "," + home + "," + visitor + ", " + conferenceString + 
+				", " + homeFav + ", " + homeSeed + ", " + visSeed + "," + (dateTime != null ? "'" + dateTime + "'" : null) + ");";
 			stmt.execute(insertSQL);
 		}
 		catch (SQLException e) {
@@ -147,7 +147,8 @@ public class DAO {
 			while (rs.next()) {
 				nflPlayoffsGame = new NFLPlayoffsGame(rs.getInt("GameIndex"), rs.getString("Description"), rs.getString("Winner"),
 					rs.getString("Loser"), rs.getInt("PointsValue"), rs.getBoolean("Completed"), rs.getInt("Year"), rs.getInt("Home"), rs.getInt("Visitor"),
-					rs.getString("Conference"), rs.getInt("HomeScore"), rs.getInt("VisScore"), rs.getDouble("Spread"), rs.getBoolean("HomeFav"), rs.getInt("HomeSeed"), rs.getInt("VisSeed"));
+					rs.getString("Conference"), rs.getInt("HomeScore"), rs.getInt("VisScore"), rs.getBoolean("HomeFav"), rs.getInt("HomeSeed"), rs.getInt("VisSeed"), 
+					rs.getTimestamp("DateTime"));
 				nflPlayoffsGameMap.put(nflPlayoffsGame.getGameIndex(), nflPlayoffsGame);
 			}
 		}
@@ -339,6 +340,20 @@ public class DAO {
 		}
 		
 		return firstGameIndex;
+	}
+	
+	public static Timestamp getFirstGameDateTime(int year) {
+		Timestamp dt = null;
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select min(dateTime) from NFLPlayoffsGame where year = " + year);
+			rs.next();
+			dt = rs.getTimestamp(1);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return dt;
 	}
 	
 	public static Pool getPool(Integer poolId) {

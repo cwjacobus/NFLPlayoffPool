@@ -291,14 +291,14 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		        		if (visitorTeam != null && visitorTeam.length() > 0 && visitorSeed != null) {
 		        			visitorNflTeamId = nflTeamsMap.get(visitorTeam) != null ? nflTeamsMap.get(visitorTeam).getNflTeamId() : null;
 		        		}
-		        		DAO.createNFLPlayoffsGame(gameDesc, pointsValue, pool.getYear(), homeNflTeamId, visitorNflTeamId, conference, null, null, null, null, homeSeed, visitorSeed);
+		        		DAO.createNFLPlayoffsGame(gameDesc, pointsValue, pool.getYear(), homeNflTeamId, visitorNflTeamId, conference, null, null, null, homeSeed, visitorSeed, null);
 		        		// TBD Add R2 game here
 		        		if (visitorNflTeamId == null) {  // Is a R2 game?
 		        			if (conference.equalsIgnoreCase("AFC")) {
-		        				DAO.createNFLPlayoffsGame("AFC R2 Game 2", 5, pool.getYear(), null, null, "AFC", null, null, null, null, 1, null); // Placeholder for second R2 game
+		        				DAO.createNFLPlayoffsGame("AFC R2 Game 2", 5, pool.getYear(), null, null, "AFC", null, null, null, 1, null, null); // Placeholder for second R2 game
 		        			}
 		        			else {
-		        				DAO.createNFLPlayoffsGame("NFC R2 Game 2", 5, pool.getYear(), null, null, "NFC", null, null, null, null, 1, null); // Placeholder for second R2 game
+		        				DAO.createNFLPlayoffsGame("NFC R2 Game 2", 5, pool.getYear(), null, null, "NFC", null, null, null, 1, null, null); // Placeholder for second R2 game
 		        			}
 		        		}
 	        		}

@@ -1,5 +1,7 @@
 package data;
 
+import java.sql.Timestamp;
+
 public class NFLPlayoffsGame {
 	
 	private int gameIndex;
@@ -14,14 +16,13 @@ public class NFLPlayoffsGame {
 	private String conference;
 	private int homeScore;
 	private int visScore;
-	private double spread;
 	private boolean homeFav;
 	private int homeSeed;
 	private int visSeed;
-	
+	private Timestamp dateTime;
 	
 	public NFLPlayoffsGame(int gameIndex, String description, String winner, String loser, int pointsValue, boolean completed, int year, 
-			int home, int visitor, String conference, int homeScore, int visScore, double spread, boolean homeFav, int homeSeed, int visSeed) {
+			int home, int visitor, String conference, int homeScore, int visScore, boolean homeFav, int homeSeed, int visSeed, Timestamp dateTime) {
 		this.gameIndex = gameIndex;
 		this.description = description;
 		this.winner = winner;
@@ -34,10 +35,10 @@ public class NFLPlayoffsGame {
 		this.conference = conference;
 		this.homeScore = homeScore;
 		this.visScore = visScore;
-		this.spread = spread;
 		this.homeFav = homeFav;
 		this.homeSeed = homeSeed;
 		this.visSeed = visSeed;
+		this.dateTime = dateTime;
 	}
 	public boolean isCompleted() {
 		return completed;
@@ -127,12 +128,6 @@ public class NFLPlayoffsGame {
 	public void setVisScore(int visScore) {
 		this.visScore = visScore;
 	}
-	public double getSpread() {
-		return spread;
-	}
-	public void setSpread(double spread) {
-		this.spread = spread;
-	}
 	public boolean isHomeFav() {
 		return homeFav;
 	}
@@ -151,5 +146,10 @@ public class NFLPlayoffsGame {
 	public void setVisSeed(int visSeed) {
 		this.visSeed = visSeed;
 	}
-
+	public Timestamp getDateTime() {
+		return dateTime;
+	}
+	public void setDateTime(Timestamp dateTime) {
+		this.dateTime = dateTime;
+	}
 }

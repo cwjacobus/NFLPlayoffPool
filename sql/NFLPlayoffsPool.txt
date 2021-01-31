@@ -24,10 +24,10 @@ Visitor int(5),
 Conference varchar(5);
 HomeScore int(3);
 VisScore int(3);
-Spread decimal(4,1);
 HomeFav boolean;
 HomeSeed int(3);
 VisSeed int(3);
+DateTime timestamp,
 );
 
 CREATE TABLE Pick
