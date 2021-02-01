@@ -268,7 +268,7 @@ public class MigrateDB {
 			while (rs.next()) {
 				nflPlayoffsGame = new NFLPlayoffsGame(rs.getInt("GameIndex"), rs.getString("Description"), rs.getString("Winner"),
 						rs.getString("Loser"), rs.getInt("PointsValue"), rs.getBoolean("Completed"), rs.getInt("Year"), rs.getInt("Home"), rs.getInt("Visitor"),
-						rs.getString("Conference"), rs.getInt("HomeScore"), rs.getInt("VisScore"), rs.getBoolean("HomeFav"), rs.getInt("HomeSeed"), rs.getInt("VisSeed"), 
+						rs.getString("Conference"), rs.getInt("HomeScore"), rs.getInt("VisScore"), rs.getInt("HomeSeed"), rs.getInt("VisSeed"), 
 						rs.getTimestamp("DateTime"));
 				nflPlayoffsGameMap.put(nflPlayoffsGame.getGameIndex(), nflPlayoffsGame);
 			}

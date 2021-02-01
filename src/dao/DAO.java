@@ -57,13 +57,13 @@ public class DAO {
 	}
 	
 	public static void createNFLPlayoffsGame(String description, Integer pointsValue, Integer year, Integer home, Integer visitor, String conference,
-			Integer homeScore, Integer visScore, Boolean homeFav, Integer homeSeed, Integer visSeed, Timestamp dateTime) {
+			Integer homeScore, Integer visScore, Integer homeSeed, Integer visSeed, Timestamp dateTime) {
 		try {
 			Statement stmt = conn.createStatement();
 			String conferenceString = conference != null ? "'" + conference + "'" : null;
-			String insertSQL = "INSERT INTO NFLPlayoffsGame (Description, PointsValue, Completed, Year, Home, Visitor, Conference, HomeFav, HomeSeed, " +
+			String insertSQL = "INSERT INTO NFLPlayoffsGame (Description, PointsValue, Completed, Year, Home, Visitor, Conference, HomeSeed, " +
 				" VisSeed, DateTime) VALUES ('" + description + "', " + pointsValue + ", 0, " + year + "," + home + "," + visitor + ", " + conferenceString + 
-				", " + homeFav + ", " + homeSeed + ", " + visSeed + "," + (dateTime != null ? "'" + dateTime + "'" : null) + ");";
+				", " + homeSeed + ", " + visSeed + "," + (dateTime != null ? "'" + dateTime + "'" : null) + ");";
 			stmt.execute(insertSQL);
 		}
 		catch (SQLException e) {
@@ -147,7 +147,7 @@ public class DAO {
 			while (rs.next()) {
 				nflPlayoffsGame = new NFLPlayoffsGame(rs.getInt("GameIndex"), rs.getString("Description"), rs.getString("Winner"),
 					rs.getString("Loser"), rs.getInt("PointsValue"), rs.getBoolean("Completed"), rs.getInt("Year"), rs.getInt("Home"), rs.getInt("Visitor"),
-					rs.getString("Conference"), rs.getInt("HomeScore"), rs.getInt("VisScore"), rs.getBoolean("HomeFav"), rs.getInt("HomeSeed"), rs.getInt("VisSeed"), 
+					rs.getString("Conference"), rs.getInt("HomeScore"), rs.getInt("VisScore"), rs.getInt("HomeSeed"), rs.getInt("VisSeed"), 
 					rs.getTimestamp("DateTime"));
 				nflPlayoffsGameMap.put(nflPlayoffsGame.getGameIndex(), nflPlayoffsGame);
 			}

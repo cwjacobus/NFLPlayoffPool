@@ -16,13 +16,12 @@ public class NFLPlayoffsGame {
 	private String conference;
 	private int homeScore;
 	private int visScore;
-	private boolean homeFav;
 	private int homeSeed;
 	private int visSeed;
 	private Timestamp dateTime;
 	
 	public NFLPlayoffsGame(int gameIndex, String description, String winner, String loser, int pointsValue, boolean completed, int year, 
-			int home, int visitor, String conference, int homeScore, int visScore, boolean homeFav, int homeSeed, int visSeed, Timestamp dateTime) {
+			int home, int visitor, String conference, int homeScore, int visScore, int homeSeed, int visSeed, Timestamp dateTime) {
 		this.gameIndex = gameIndex;
 		this.description = description;
 		this.winner = winner;
@@ -35,7 +34,6 @@ public class NFLPlayoffsGame {
 		this.conference = conference;
 		this.homeScore = homeScore;
 		this.visScore = visScore;
-		this.homeFav = homeFav;
 		this.homeSeed = homeSeed;
 		this.visSeed = visSeed;
 		this.dateTime = dateTime;
@@ -127,12 +125,6 @@ public class NFLPlayoffsGame {
 	}
 	public void setVisScore(int visScore) {
 		this.visScore = visScore;
-	}
-	public boolean isHomeFav() {
-		return homeFav;
-	}
-	public void setHomeFav(boolean homeFav) {
-		this.homeFav = homeFav;
 	}
 	public int getHomeSeed() {
 		return homeSeed;
