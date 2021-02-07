@@ -81,7 +81,6 @@ select p.* from Pick p, User u where p.userId= u.userId and u.userName = 'Jacobu
 // Get standings
 select u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g where p.userId= u.userId and g.gameIndex = p.gameId and g.completed = true and p.winner = g.winner group by u.UserName order by sum(g.PointsValue) desc, u.UserName;
 
-
 // Get pick distribution
 select g.description, p.winner, count(*) from Pick p, NFLPLayoffsGame g where g.gameIndex = p.gameId and poolid=6 group by g.description, p.winner order by g.gameIndex, count(*) desc;
 
@@ -98,3 +97,17 @@ select u.username, p.winner, p.poolid from pick p, user u where p.userid = u.use
 
 // Get Chris' Champ Game Picks (Sculley pool 14-X)
 select u.username, p.winner, p.poolid from pick p, user u where p.userid = u.userid and p.userid in (select userid from user where username like '%Jacobus%' or username like '%CJ1%' or username like '%CJ2%') and p.gameid in (select gameindex from nflplayoffsgame where description like '%Champ%') order by poolid, username;
+
+//Get Winners/Losers using scores
+SELECT
+  CASE 
+    WHEN g.homescore > g.visscore THEN t1.shortname
+    WHEN g.visscore > g.homescore THEN t2.shortname
+    ELSE 'Tie'
+  END as Winner,
+  CASE 
+    WHEN g.homescore < g.visscore THEN t1.shortname
+    WHEN g.visscore < g.homescore THEN t2.shortname
+    ELSE 'Tie'
+  END as Loser
+FROM nflplayoffsgame g, nflteam t1, nflteam t2 where g.home = t1.nflteamid and g.visitor = t2.nflteamid and g.year = 20 and g.completed=1;

@@ -179,9 +179,22 @@ public class DAO {
 		HashMap<String, String> maxPtsStandings = new HashMap<String, String>();
 		try {
 			Statement stmt = conn.createStatement();
+			String winnerSql = "";
+			if (year < 20) {
+				winnerSql = "g.winner";
+			}
+			else {  // If 2020 on use scores to determine winner
+				winnerSql = "(SELECT " + 
+						    "CASE" + 
+						    " WHEN g2.homescore > g2.visscore THEN t1.shortname" + 
+						    " WHEN g2.visscore > g2.homescore THEN t2.shortname" + 
+						    " ELSE 'Tie' " + 
+						    "END " + 
+						    "FROM nflplayoffsgame g2, nflteam t1, nflteam t2 where g2.home = t1.nflteamid and g2.visitor = t2.nflteamid and g2.gameindex = g.gameindex)";
+			}
 			String sql = "SELECT u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g " + 
-					"where p.userId = u.userId and g.gameIndex = p.gameId and g.completed = true and p.winner = g.winner " +  
-					"and " + getYearClause("g", year, "p", poolId) +
+					"where p.userId = u.userId and g.gameIndex = p.gameId and g.completed = true and p.winner = " + winnerSql +  
+					" and " + getYearClause("g", year, "p", poolId) +
 					" group by u.UserName order by sum(g.PointsValue) desc, u.UserName";
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
