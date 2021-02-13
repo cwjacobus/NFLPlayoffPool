@@ -14,22 +14,25 @@ import data.Pool;
 public class UpdateScoreAction extends ActionSupport implements SessionAware {
 	
 	private static final long serialVersionUID = 1L;
-	private String winner;
-	private String loser;
+	//private String winner;
+	//private String loser;
+	private Integer visScore;
+	private Integer homeScore;
 	private Integer gameIndex;
 	Map<String, Object> userSession;
 	Pool pool;
 
 	public String execute() throws Exception {
 		pool = (Pool)userSession.get("pool");
-		DAO.updateScore(winner, loser, gameIndex);
+		//DAO.updateScore(winner, loser, gameIndex);
+		DAO.updateScore(visScore, homeScore, gameIndex);
 		Thread.sleep(1000);
 		HashMap<Integer, NFLPlayoffsGame> nflPlayoffsGameMap = DAO.getNFLPlayoffsGamesMap(pool.getYear());
 		userSession.put("nflPlayoffsGameMap", nflPlayoffsGameMap);
 	    return "success";
 	}
 	   
-	public String getWinner() {
+	/*public String getWinner() {
 		return winner;
 	}
 
@@ -43,6 +46,22 @@ public class UpdateScoreAction extends ActionSupport implements SessionAware {
 
 	public void setLoser(String loser) {
 		this.loser = loser;
+	}*/
+
+	public Integer getVisScore() {
+		return visScore;
+	}
+
+	public void setVisScore(Integer visScore) {
+		this.visScore = visScore;
+	}
+
+	public Integer getHomeScore() {
+		return homeScore;
+	}
+
+	public void setHomeScore(Integer homeScore) {
+		this.homeScore = homeScore;
 	}
 
 	public Integer getGameIndex() {

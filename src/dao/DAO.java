@@ -414,10 +414,22 @@ public class DAO {
 		return numberOfCompletedGames;
 	}
 	
+	// No longer used
 	public static void updateScore(String winner, String loser, Integer gameIndex) {
 		try {
 			Statement stmt = conn.createStatement();
 			String sql = "UPDATE NFLPlayoffsGame SET Winner = '" + winner + "', Loser = '" + loser + "', Completed = true WHERE GameIndex = " + gameIndex;
+			stmt.execute(sql);
+		}
+		catch (SQLException e) {
+		}
+		return;
+	}
+	
+	public static void updateScore(Integer visScore, Integer homeScore, Integer gameIndex) {
+		try {
+			Statement stmt = conn.createStatement();
+			String sql = "UPDATE NFLPlayoffsGame SET VisScore = " + visScore + ", HomeScore = " + homeScore + ", Completed = true WHERE GameIndex = " + gameIndex;
 			stmt.execute(sql);
 		}
 		catch (SQLException e) {

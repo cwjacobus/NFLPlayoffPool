@@ -11,10 +11,10 @@
   		<form action="updateScore">
   		<table><tr>
       		<td width=100 style="color: white; background: #5D7B9D;">${nflPlayoffsGame.value.description}</td>
-      		<td>Vis</td>
-      		<td><input type="text" name="visScore" value="${nflPlayoffsGame.value.visScore}" size="2"/></td>
-      		<td>Home</td>
-      		<td><input type="text" name="homeScore" value="${nflPlayoffsGame.value.homeScore}" size="2"/></td>
+      		<td>Winner</td>
+      		<td><input type="text" name="winner" value="${nflPlayoffsGame.value.winner}" size=3/></td>
+      		<td>Loser</td>
+      		<td><input type="text" name="loser" value="${nflPlayoffsGame.value.loser}" size=3/></td>
       		<td><input type="submit" value="Set Results"/></td>
       	</tr></table>
       	<input type="hidden" name="gameIndex" value="${nflPlayoffsGame.value.gameIndex}"/>
