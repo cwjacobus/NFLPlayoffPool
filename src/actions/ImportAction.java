@@ -277,6 +277,8 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		        		if (teamsStringArray.length == 2) {
 		        			homeTeam = teamsStringArray[1].trim();
 		        			visitorTeam = teamsStringArray[0].trim();
+		        			homeTeam = getNFLTeamFromAlias(homeTeam); // In case name is different in spread sheet
+		        			visitorTeam = getNFLTeamFromAlias(visitorTeam); // In case name is different in spread sheet
 		        		}
 		        		String[] seedingStringArray = seedingString.split("@");
 		        		if (seedingStringArray.length == 2) {
@@ -410,8 +412,8 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		else if (nflTeam.equalsIgnoreCase("PITT") || nflTeam.equalsIgnoreCase("STEELERS")) {
 			nflTeam = "PIT";
 		}
-		else if (nflTeam.equalsIgnoreCase("ARIZ") || nflTeam.equalsIgnoreCase("ARI") || nflTeam.equalsIgnoreCase("AZ")) {
-			nflTeam = "ARZ";
+		else if (nflTeam.equalsIgnoreCase("ARIZ") || nflTeam.equalsIgnoreCase("ARZ") || nflTeam.equalsIgnoreCase("AZ")) {
+			nflTeam = "ARI";
 		}
 		else if (nflTeam.equalsIgnoreCase("BALT") || nflTeam.equalsIgnoreCase("BALTIMORE")) {
 			nflTeam = "BAL";

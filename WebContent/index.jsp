@@ -9,7 +9,7 @@
 </head>
 <body>
 	<h1>NFL Playoffs Pool</h1>
-   	<form action="getStandings">
+   	<form action="getStandings"  onsubmit="loginButton.disabled = true; return true;">
       	<label for="name">Please enter your user name</label><br/>
       	<input type="text" name="name"/><br>
       	<input type="hidden" name="maxPoints" value=false/>
@@ -25,9 +25,9 @@
 			 <option value="8">Jacobus 2019</option>
 			 <option value="10">Sculley 2020</option>
 			 <option value="9">Jacobus 2020</option>
-			 <option value="11">Jacobus 2021 Test</option>
+			 <option value="11">Jacobus 2021</option>
 		</select><br>
-      	<input type="submit" value="Login"/>
+      	<input type="submit" name= "loginButton" value="Login"/>
   	 </form>
 	</body>
 </html>

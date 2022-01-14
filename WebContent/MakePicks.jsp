@@ -22,12 +22,16 @@
     /*
     2018
     var nfcTeams = {1: "NO", 2: "LAR", 3: "CHI", 4: "DAL", 5: "SEA", 6: "PHI"};
-	var afcTeams = {1: "KC", 2: "NE", 3: "HOU", 4: "BAL", 5: "LAC", 6: "IND"}; */
-	/* 2019
+	var afcTeams = {1: "KC", 2: "NE", 3: "HOU", 4: "BAL", 5: "LAC", 6: "IND"}; 
+	2019
 	var nfcTeams = {1: "SF", 2: "GB", 3: "NO", 4: "PHI", 5: "SEA", 6: "MIN"};
-	var afcTeams = {1: "BAL", 2: "KC", 3: "NE", 4: "HOU", 5: "BUF", 6: "TEN"};*/
+	var afcTeams = {1: "BAL", 2: "KC", 3: "NE", 4: "HOU", 5: "BUF", 6: "TEN"};
+	2020
 	var nfcTeams = {1: "GB", 2: "NO", 3: "SEA", 4: "WAS", 5: "TB", 6: "LAR", 7: "CHI"};
 	var afcTeams = {1: "KC", 2: "BUF", 3: "PIT", 4: "TEN", 5: "BAL", 6: "CLE", 7: "IND"};
+	2021 */
+	var nfcTeams = {1: "GB", 2: "TB", 3: "DAL", 4: "LAR", 5: "ARI", 6: "SF", 7: "PHI"};
+	var afcTeams = {1: "TEN", 2: "KC", 3: "BUF", 4: "CIN", 5: "LV", 6: "NE", 7: "PIT"};
 	/*for (var key in nfcTeams) {
 		alert("key " + key + " has value " + nfcTeams[key]);
 	}*/
@@ -205,7 +209,7 @@
  
 </head>
 <body onload="initializeWC()">
-	<form action="savePicks">
+	<form action="savePicks" onsubmit="makePicksButton.disabled = true; return true;">
 	<table cellspacing=10 cellpadding=10>
 		<tr><th>WC Round</th><th>Div Round</th><th>Champ</th><th>Super Bowl</th></tr>
 		<tr>
@@ -263,10 +267,10 @@
       	<td></td>
       	<td></td>
 		</tr>
-
 	</table>
+	
   	<c:if test="${!sessionScope.readOnly}">
-  		<input type="submit" value="Make Picks"/>
+  		<input name="makePicksButton" type="submit" value="Make Picks"/>
   	</c:if>
   	<br><br>
   	<c:choose>
