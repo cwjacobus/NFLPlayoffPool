@@ -86,7 +86,7 @@ public class DAO {
 		int userId = 0;
 		try {
 			Statement stmt = conn.createStatement();
-			boolean admin = userName.equalsIgnoreCase("Jacobus") ? true : false;
+			boolean admin = userName.contains("Jacobus") ? true : false;
 			stmt.executeUpdate("INSERT INTO User (UserName, LastName, FirstName, Email, Year, admin, PoolId) VALUES ('" + 
 				userName + "', '', '', '', " + year + "," + admin + ", " + poolId + ");");
 			ResultSet rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
@@ -106,6 +106,19 @@ public class DAO {
 			Statement stmt = conn.createStatement();
 			String insertSQL = "INSERT INTO Pick (UserId, GameId, Winner, PoolId, CreatedTime) VALUES (" + 
 				userId + ", " + gameId + ", '" + winner + "', " + poolId + ", NOW());";
+			stmt.execute(insertSQL);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void copyUsersFromAnotherPool(Integer year, Integer toPoolId, Integer fromPoolId) {
+		try {
+			Statement stmt = conn.createStatement();
+			String adminSQL = "CASE WHEN User.LastName like '%Jacobus%' AND User.FirstName like '%Chris%' THEN true ELSE false END";
+			String insertSQL = "INSERT INTO User (UserName, LastName, FirstName, Year, Admin, PoolId) " + 
+				"SELECT User.UserName, User.LastName, User.FirstName, " + year + ", " + adminSQL + ", " + toPoolId + " FROM User WHERE User.poolId = " + fromPoolId;
 			stmt.execute(insertSQL);
 		}
 		catch (SQLException e) {
@@ -426,10 +439,11 @@ public class DAO {
 		return;
 	}
 	
-	public static void updateScore(Integer visScore, Integer homeScore, Integer gameIndex) {
+	public static void updateScore(Integer visScore, Integer homeScore, String winner, String loser, Integer gameIndex) {
 		try {
 			Statement stmt = conn.createStatement();
-			String sql = "UPDATE NFLPlayoffsGame SET VisScore = " + visScore + ", HomeScore = " + homeScore + ", Completed = true WHERE GameIndex = " + gameIndex;
+			String sql = "UPDATE NFLPlayoffsGame SET VisScore = " + visScore + ", HomeScore = " + homeScore + ", Winner = '" + winner + "', Loser = '" + loser + 
+				"', Completed = true WHERE GameIndex = " + gameIndex;
 			stmt.execute(sql);
 		}
 		catch (SQLException e) {

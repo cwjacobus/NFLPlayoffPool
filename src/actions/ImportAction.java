@@ -40,12 +40,15 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	
 	private static final long serialVersionUID = 1L;
 	private String usersCB;
+	private String usersFPCB;
+	private Integer fromPoolId;
 	private String gamesCB;
 	private String picksCB;
 	private String teamsCB;
 	private String inputFileName;
 	
 	boolean usersImport = false;
+	boolean usersFYImport = false;
 	boolean picksImport = false;
 	boolean nflPlayoffsGamesImport = false;
 	boolean nflTeamsImport = false;
@@ -68,8 +71,8 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		prop.load(input);
 		System.out.println("Input file path: " + prop.getProperty("inputFilePath"));
 		
-	    System.out.println("Import " + usersCB + " " + gamesCB + " " + picksCB + " " + teamsCB + " " + inputFileName);
-	    if (usersCB == null && gamesCB == null && picksCB == null && teamsCB == null) {
+	    System.out.println("Import " + usersCB + " " + usersFPCB + " " + gamesCB + " " + picksCB + " " + teamsCB + " " + inputFileName);
+	    if (usersCB == null && usersFPCB == null && gamesCB == null && picksCB == null && teamsCB == null) {
 	    	context.put("errorMsg", "Nothing selected to import!");
 	    	stack.push(context);
 	    	return "error";
@@ -80,8 +83,13 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    	return "error";
 	    }
 	    else {
-	    	if (usersCB != null) {
-	    		usersImport = true; 
+	    	if (usersCB != null || usersFPCB != null) {
+	    		if (usersCB != null) {
+	    			usersImport = true; 
+	    		}
+	    		if (usersFPCB != null) {
+	    			usersFYImport = true; 
+	    		}
 	    		// Check for users already imported
 	    		if (DAO.getUsersCount(pool.getYear(), pool.getPoolId()) > 0) {
 	    			context.put("errorMsg", "Users already imported for 20" + pool.getYear() + "!  Delete and reimport.");
@@ -128,6 +136,10 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    		if (nflPlayoffsGamesImport) {
 	    			importNFLPlayoffsGames(hWorkbook);
 	    		}
+	    	}
+	    	if (usersFYImport) {
+	    		System.out.println("Import users from pool ID: " + fromPoolId);
+	    		importUsersFromPoolId(pool);
 	    	}
 	    	if (nflTeamsImport) {
 	    		importNFLTeamsFromWS();
@@ -226,6 +238,10 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    catch (Exception e) {
 	    	e.printStackTrace();
 	    }
+	}
+	
+	private void importUsersFromPoolId(Pool pool) {
+		DAO.copyUsersFromAnotherPool(pool.getYear(), pool.getPoolId(), fromPoolId);
 	}
 	
 	private void importNFLPlayoffsGames(HSSFWorkbook hWorkbook) {	
@@ -482,6 +498,22 @@ public class ImportAction extends ActionSupport implements SessionAware {
 
 	public void setUsersCB(String usersCB) {
 		this.usersCB = usersCB;
+	}
+
+	public String getUsersFPCB() {
+		return usersFPCB;
+	}
+
+	public void setUsersFPCB(String usersFPCB) {
+		this.usersFPCB = usersFPCB;
+	}
+
+	public Integer getFromPoolId() {
+		return fromPoolId;
+	}
+
+	public void setFromPoolId(Integer fromPoolId) {
+		this.fromPoolId = fromPoolId;
 	}
 
 	public String getGamesCB() {
