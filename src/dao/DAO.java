@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -82,18 +83,23 @@ public class DAO {
 		}
 	}
 	
-	public static int createUser(String userName, Integer year, Integer poolId) {
+	public static int createUser(String userName, String firstName, String lastName, Integer year, Integer poolId) {
 		int userId = 0;
 		try {
 			Statement stmt = conn.createStatement();
 			boolean admin = userName.contains("Jacobus") ? true : false;
-			stmt.executeUpdate("INSERT INTO User (UserName, LastName, FirstName, Email, Year, admin, PoolId) VALUES ('" + 
-				userName + "', '', '', '', " + year + "," + admin + ", " + poolId + ");");
+			String insertSQL = "INSERT INTO User (UserName, LastName, FirstName, Email, Year, admin, PoolId) VALUES ('" + userName + "', " +
+				(firstName != null && firstName.trim().length() > 0 ? "'" + firstName + "', " : "null,") + (lastName != null && lastName.trim().length() > 0 ? "'" + lastName + "', " : "null,") + 
+					" null, " + year + "," + admin + ", " + poolId + ");";
+			stmt.executeUpdate(insertSQL);
 			ResultSet rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
 			if (rs.next()) {
 		       userId = rs.getInt(1);
 			}
 			//System.out.println("ID: " + userId);
+		}
+		catch (SQLIntegrityConstraintViolationException sie) {
+			System.out.println("Duplicate user: " + userName);
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
@@ -113,17 +119,23 @@ public class DAO {
 		}
 	}
 	
-	public static void copyUsersFromAnotherPool(Integer year, Integer toPoolId, Integer fromPoolId) {
+	public static int copyUsersFromAnotherPool(Integer year, Integer toPoolId, Integer fromPoolId) {
+		int numberOfRows = 0;
 		try {
 			Statement stmt = conn.createStatement();
 			String adminSQL = "CASE WHEN User.LastName like '%Jacobus%' AND User.FirstName like '%Chris%' THEN true ELSE false END";
 			String insertSQL = "INSERT INTO User (UserName, LastName, FirstName, Year, Admin, PoolId) " + 
 				"SELECT User.UserName, User.LastName, User.FirstName, " + year + ", " + adminSQL + ", " + toPoolId + " FROM User WHERE User.poolId = " + fromPoolId;
-			stmt.execute(insertSQL);
+			stmt.executeUpdate(insertSQL);
+			ResultSet rs = stmt.executeQuery("SELECT ROW_COUNT()");
+			if (rs.next()) {
+				numberOfRows = rs.getInt(1);
+			}
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return numberOfRows;
 	}
 	
 	public static void deletePicksByUserIdAndPoolId(Integer userId, Integer poolId) {
@@ -139,6 +151,7 @@ public class DAO {
 	
 	public static List<String> getEliminatedTeams(Integer year) {
 		List<String> eliminatedTeams = new ArrayList<String>();
+		//select case when homescore > visscore then visitor when visscore > homescore then home end from nflplayoffsgame where completed = 1 and year = 21
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT loser FROM NFLPlayoffsGame where " + getYearClause(year, null));
@@ -170,7 +183,7 @@ public class DAO {
 		return nflPlayoffsGameMap;
 	}
 	
-	public static HashMap<String, NFLTeam> getNFLTeamsMap() {
+	/*public static HashMap<String, NFLTeam> getNFLTeamsMap() {
 		HashMap<String, NFLTeam> nflTeamsMap = new HashMap<String, NFLTeam>();
 		try {
 			Statement stmt = conn.createStatement();
@@ -179,6 +192,22 @@ public class DAO {
 			while (rs.next()) {
 				nflTeam = new NFLTeam(rs.getInt("NFLTeamId"), rs.getString("LongName"), rs.getString("ShortName"));
 				nflTeamsMap.put(nflTeam.getShortName(), nflTeam);
+			}
+		}
+		catch (SQLException e) {
+		}
+		return nflTeamsMap;
+	}*/
+	
+	public static HashMap<Integer, NFLTeam> getNFLTeamsMapById() {
+		HashMap<Integer, NFLTeam> nflTeamsMap = new HashMap<Integer, NFLTeam>();
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM NFLTeam order by ShortName");
+			NFLTeam nflTeam;
+			while (rs.next()) {
+				nflTeam = new NFLTeam(rs.getInt("NFLTeamId"), rs.getString("LongName"), rs.getString("ShortName"));
+				nflTeamsMap.put(nflTeam.getNflTeamId(), nflTeam);
 			}
 		}
 		catch (SQLException e) {
@@ -427,23 +456,11 @@ public class DAO {
 		return numberOfCompletedGames;
 	}
 	
-	// No longer used
-	public static void updateScore(String winner, String loser, Integer gameIndex) {
-		try {
-			Statement stmt = conn.createStatement();
-			String sql = "UPDATE NFLPlayoffsGame SET Winner = '" + winner + "', Loser = '" + loser + "', Completed = true WHERE GameIndex = " + gameIndex;
-			stmt.execute(sql);
-		}
-		catch (SQLException e) {
-		}
-		return;
-	}
-	
-	public static void updateScore(Integer visScore, Integer homeScore, String winner, String loser, Integer gameIndex) {
+	public static void updateNFLPlayoffsGame(Integer visScore, Integer homeScore, String winner, String loser, Integer visitor, Integer home, Integer gameIndex) {
 		try {
 			Statement stmt = conn.createStatement();
 			String sql = "UPDATE NFLPlayoffsGame SET VisScore = " + visScore + ", HomeScore = " + homeScore + ", Winner = '" + winner + "', Loser = '" + loser + 
-				"', Completed = true WHERE GameIndex = " + gameIndex;
+				"', visitor = " + visitor + ", home = " + home + ", Completed = true WHERE GameIndex = " + gameIndex;
 			stmt.execute(sql);
 		}
 		catch (SQLException e) {

@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -138,8 +139,20 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    		}
 	    	}
 	    	if (usersFYImport) {
-	    		System.out.println("Import users from pool ID: " + fromPoolId);
-	    		importUsersFromPoolId(pool);
+	    		if (fromPoolId != null) {
+	    			int numberOfUsersImported = importUsersFromPoolId(pool);
+	    			if (numberOfUsersImported == 0) {
+	    				context.put("errorMsg", "No users imported!");
+		    			stack.push(context);
+		    			return "error";
+	    			}
+	    			System.out.println(numberOfUsersImported + " users imported from pool ID: " + fromPoolId);
+	    		}
+	    		else {
+	    			context.put("errorMsg", "Pool ID is required!");
+	    			stack.push(context);
+	    			return "error";
+	    		}
 	    	}
 	    	if (nflTeamsImport) {
 	    		importNFLTeamsFromWS();
@@ -176,7 +189,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        		System.out.println(userName);
 	        		//int userId = 0;
 	        		if (usersImport) {
-	        			DAO.createUser(userName, pool.getYear(), pool.getPoolId());
+	        			DAO.createUser(userName, null, null, pool.getYear(), pool.getPoolId());
 	        		}
 	        		if (picksImport) {
 	        			User user = null;
@@ -240,8 +253,8 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    }
 	}
 	
-	private void importUsersFromPoolId(Pool pool) {
-		DAO.copyUsersFromAnotherPool(pool.getYear(), pool.getPoolId(), fromPoolId);
+	private int importUsersFromPoolId(Pool pool) {
+		return DAO.copyUsersFromAnotherPool(pool.getYear(), pool.getPoolId(), fromPoolId);
 	}
 	
 	private void importNFLPlayoffsGames(HSSFWorkbook hWorkbook) {	
@@ -253,7 +266,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        Row seedingRow;
 	        Row conferenceRow = null;
 	        @SuppressWarnings("unchecked")
-			HashMap<String, NFLTeam> nflTeamsMap = (HashMap<String, NFLTeam>)userSession.get("nflTeamsMap");
+			HashMap<Integer, NFLTeam> nflTeamsMapById = (HashMap<Integer, NFLTeam>)userSession.get("nflTeamsMap");
 	        while (rowIterator.hasNext()) {
 	        	Row row = rowIterator.next();
 	        	String gameDesc = getStringFromCell(row, 1);
@@ -304,10 +317,12 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		        		pointsValueString = pointsValueString.split(" ")[0].replace("(", "");
 		        		int pointsValue = Integer.parseInt(pointsValueString);
 		        		System.out.println("VIS: " + visitorTeam + " " + visitorSeed + " HOME: " + homeTeam + " " + homeSeed);
-		        		Integer homeNflTeamId = nflTeamsMap.get(homeTeam) != null ? nflTeamsMap.get(homeTeam).getNflTeamId() : null;
+		        		//Integer homeNflTeamId = nflTeamsMap.get(homeTeam) != null ? nflTeamsMap.get(homeTeam).getNflTeamId() : null;
+		        		Integer homeNflTeamId = getNFLTeamIdFromShortName(homeTeam, nflTeamsMapById);
 		        		Integer visitorNflTeamId = null;
 		        		if (visitorTeam != null && visitorTeam.length() > 0 && visitorSeed != null) {
-		        			visitorNflTeamId = nflTeamsMap.get(visitorTeam) != null ? nflTeamsMap.get(visitorTeam).getNflTeamId() : null;
+		        			//visitorNflTeamId = nflTeamsMap.get(visitorTeam) != null ? nflTeamsMap.get(visitorTeam).getNflTeamId() : null;
+		        			visitorNflTeamId = getNFLTeamIdFromShortName(visitorTeam, nflTeamsMapById);
 		        		}
 		        		DAO.createNFLPlayoffsGame(gameDesc, pointsValue, pool.getYear(), homeNflTeamId, visitorNflTeamId, conference, null, null, homeSeed, visitorSeed, null);
 		        		// TBD Add R2 game here
@@ -490,6 +505,21 @@ public class ImportAction extends ActionSupport implements SessionAware {
 			nflTeam = "CHI";
 		}
 		return nflTeam;
+	}
+	
+	public Integer getNFLTeamIdFromShortName(String shortName, HashMap<Integer, NFLTeam> nflTeamsMap) {
+		// TBD Commonize
+		Integer teamId = null;
+		List<NFLTeam> nflTeamsList = new ArrayList<NFLTeam>(nflTeamsMap.values());
+		Optional<NFLTeam> homeMatch = 
+			nflTeamsList
+			.stream()
+			.filter((p) -> p.getShortName().equals(shortName))
+			.findAny();
+		if (homeMatch.isPresent()) {
+			teamId = homeMatch.get().getNflTeamId();
+		}	
+		return teamId;
 	}
 
 	public String getUsersCB() {

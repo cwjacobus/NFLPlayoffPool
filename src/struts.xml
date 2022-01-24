@@ -41,5 +41,11 @@
             <result name="success">/ImportResults.jsp</result>
             <result name="error">/ErrorPage.jsp</result>
       </action>
+      <action name="addUser" 
+            class="actions.AddUserAction" 
+            method="execute">
+            <result name="success">/AddUser.jsp</result>
+            <result name="error">/ErrorPage.jsp</result>
+      </action>
    </package>
 </struts>

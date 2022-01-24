@@ -83,13 +83,19 @@
   		<form action="import">
   			<input type="file" name="inputFileName" accept=".xls" /><br>
   			<input type="checkbox" name="usersCB" value="Users"> Users<br>
-  			<input type="checkbox" name="usersFPCB" value="UsersFY"> Users From Pool ID <input type="number" name="fromPoolId" min="1" max="99"/><br>
+  			<input type="checkbox" name="usersFPCB" value="UsersFY"> Users From Pool ID <input type="number" name="fromPoolId" min="1" max="99" style="width: 4em"/><br>
 			<input type="checkbox" name="gamesCB" value="Games"> Games<br>
 			<input type="checkbox" name="picksCB" value="Picks"> Picks<br>
 			<input type="checkbox" name="teamsCB" value="Teams"> Teams (from WS)<br>
 			<input type="submit" value="Import">
   		</form>
-  		<br>
+  		<h3>Add User</h3>
+  		<form action="addUser">
+  			User Name: <input type="text" name="userName" style="width: 6em"/><br>
+  			First Name: <input type="text" name="firstName" style="width: 6em"/><br>
+  			Last Name: <input type="text" name="lastName" style="width: 6em"/><br>
+  			<input type="submit" value="Add User">
+  		</form>
   	</c:if>
 	</body>
 </html>
