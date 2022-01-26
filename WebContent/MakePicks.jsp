@@ -275,14 +275,16 @@
   	<br><br>
   	<c:choose>
   	<c:when test="${fn:length(picksMap[sessionScope.user.userId]) > 0}">
+  	<!--<c:out value="${!fn:contains(eliminatedTeams, 'TB')}"></c:out>-->
   	My Picks:<br>
   		<c:forEach var="pick" items="${picksMap[sessionScope.user.userId]}">
   			<c:set var="winLoseClass" value="class='win'"/>
   			<c:if test="${!nflPlayoffsGameMap[pick.gameId].completed}">
   				<c:set var="winLoseClass" value=""/>
   			</c:if>
-  			<c:if test="${(nflPlayoffsGameMap[pick.gameId].winner != pick.winner && nflPlayoffsGameMap[pick.gameId].completed)
-  							|| (!nflPlayoffsGameMap[pick.gameId].completed && fn:contains(eliminatedTeams, pick.winner))}">
+  			<c:if test="${((nflPlayoffsGameMap[pick.gameId].completed && (nflPlayoffsGameMap[pick.gameId].winner != pick.winner && nflPlayoffsGameMap[pick.gameId].round != 2) || 
+  							(nflPlayoffsGameMap[pick.gameId].round == 2 && !fn:contains(round2WinningTeams, pick.winner))))
+  								|| (!nflPlayoffsGameMap[pick.gameId].completed && fn:contains(eliminatedTeams, pick.winner))}">
   				<c:set var="winLoseClass" value="class='lose'"/>
   			</c:if>
   			<span ${winLoseClass}>${pick.winner}</span>
@@ -305,7 +307,8 @@
   				<c:if test="${!nflPlayoffsGameMap[pick.gameId].completed}">
   					<c:set var="winLoseClass" value=""/>
   				</c:if>
-  				<c:if test="${(nflPlayoffsGameMap[pick.gameId].winner != pick.winner && nflPlayoffsGameMap[pick.gameId].completed)
+  				<c:if test="${((nflPlayoffsGameMap[pick.gameId].completed && (nflPlayoffsGameMap[pick.gameId].winner != pick.winner && nflPlayoffsGameMap[pick.gameId].round != 2) || 
+  							(nflPlayoffsGameMap[pick.gameId].round == 2 && !fn:contains(round2WinningTeams, pick.winner))))
   								|| (!nflPlayoffsGameMap[pick.gameId].completed && fn:contains(eliminatedTeams, pick.winner))}">
   					<c:set var="winLoseClass" value="class='lose'"/>
   				</c:if>

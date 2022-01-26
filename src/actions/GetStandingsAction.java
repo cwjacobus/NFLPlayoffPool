@@ -55,8 +55,6 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 			stack.push(context);
 			return "error";
 		}
-		//HashMap<String, NFLTeam> nflTeamsMap = DAO.getNFLTeamsMap();
-		//userSession.put("nflTeamsMap", nflTeamsMap);
 		HashMap<Integer, NFLTeam> nflTeamsMapById = DAO.getNFLTeamsMapById();
 		userSession.put("nflTeamsMapById", nflTeamsMapById);
 		TreeMap<String, Standings> standings = DAO.getStandings(maxPoints, pool.getYear(), poolId);

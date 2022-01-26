@@ -36,9 +36,11 @@ public class MakePicksAction extends ActionSupport implements SessionAware {
 		Map<Integer, List<Pick>> picksMap = DAO.getPicksMap(pool);
 	    HashMap<Integer, User> usersMap = DAO.getUsersMap(pool.getPoolId());
 	    List<String> eliminatedTeams = DAO.getEliminatedTeams(pool.getYear());
+	    List<String> round2WinningTeams = DAO.getRound2WinningTeams(pool.getYear());
 	    context.put("picksMap", picksMap);
 	    context.put("usersMap", usersMap);
 	    context.put("eliminatedTeams", eliminatedTeams);
+	    context.put("round2WinningTeams", round2WinningTeams);
 	    stack.push(context);
 	    return "success";
 	}

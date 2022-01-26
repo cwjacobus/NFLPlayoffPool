@@ -19,9 +19,10 @@ public class NFLPlayoffsGame {
 	private int homeSeed;
 	private int visSeed;
 	private Timestamp dateTime;
+	private int round;
 	
 	public NFLPlayoffsGame(int gameIndex, String description, String winner, String loser, int pointsValue, boolean completed, int year, 
-			int home, int visitor, String conference, int homeScore, int visScore, int homeSeed, int visSeed, Timestamp dateTime) {
+			int home, int visitor, String conference, int homeScore, int visScore, int homeSeed, int visSeed, Timestamp dateTime, int round) {
 		this.gameIndex = gameIndex;
 		this.description = description;
 		this.winner = winner;
@@ -37,6 +38,7 @@ public class NFLPlayoffsGame {
 		this.homeSeed = homeSeed;
 		this.visSeed = visSeed;
 		this.dateTime = dateTime;
+		this.round = round;
 	}
 	public boolean isCompleted() {
 		return completed;
@@ -143,5 +145,11 @@ public class NFLPlayoffsGame {
 	}
 	public void setDateTime(Timestamp dateTime) {
 		this.dateTime = dateTime;
+	}
+	public int getRound() {
+		return round;
+	}
+	public void setRound(int round) {
+		this.round = round;
 	}
 }

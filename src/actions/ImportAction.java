@@ -266,7 +266,8 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        Row seedingRow;
 	        Row conferenceRow = null;
 	        @SuppressWarnings("unchecked")
-			HashMap<Integer, NFLTeam> nflTeamsMapById = (HashMap<Integer, NFLTeam>)userSession.get("nflTeamsMap");
+			HashMap<Integer, NFLTeam> nflTeamsMapById = (HashMap<Integer, NFLTeam>)userSession.get("nflTeamsMapById");
+	        int round = 1;
 	        while (rowIterator.hasNext()) {
 	        	Row row = rowIterator.next();
 	        	String gameDesc = getStringFromCell(row, 1);
@@ -297,6 +298,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		        		conferenceString = getStringFromCell(conferenceRow, cell.getColumnIndex());
 		        		if (conferenceString != null) {
 		        			conference = conferenceString.contains("AFC") ? "AFC" : "NFC";
+		        			round = conferenceString.contains("2nd Round") ? 2 : 1;
 		        		}
 		        		String homeTeam = null;
 		        		String visitorTeam = null;
@@ -324,21 +326,21 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		        			//visitorNflTeamId = nflTeamsMap.get(visitorTeam) != null ? nflTeamsMap.get(visitorTeam).getNflTeamId() : null;
 		        			visitorNflTeamId = getNFLTeamIdFromShortName(visitorTeam, nflTeamsMapById);
 		        		}
-		        		DAO.createNFLPlayoffsGame(gameDesc, pointsValue, pool.getYear(), homeNflTeamId, visitorNflTeamId, conference, null, null, homeSeed, visitorSeed, null);
+		        		DAO.createNFLPlayoffsGame(gameDesc, pointsValue, pool.getYear(), homeNflTeamId, visitorNflTeamId, conference, null, null, homeSeed, visitorSeed, round, null);
 		        		// TBD Add R2 game here
 		        		if (visitorNflTeamId == null) {  // Is a R2 game?
 		        			if (conference.equalsIgnoreCase("AFC")) {
-		        				DAO.createNFLPlayoffsGame("AFC R2 Game 2", 5, pool.getYear(), null, null, "AFC", null, null, 1, null, null); // Placeholder for second R2 game
+		        				DAO.createNFLPlayoffsGame("AFC R2 Game 2", 5, pool.getYear(), null, null, "AFC", null, null, 1, null, 2, null); // Placeholder for second R2 game
 		        			}
 		        			else {
-		        				DAO.createNFLPlayoffsGame("NFC R2 Game 2", 5, pool.getYear(), null, null, "NFC", null, null, 1, null, null); // Placeholder for second R2 game
+		        				DAO.createNFLPlayoffsGame("NFC R2 Game 2", 5, pool.getYear(), null, null, "NFC", null, null, 1, null, 2, null); // Placeholder for second R2 game
 		        			}
 		        		}
 	        		}
 	        		// Manually add Champ games and SB
-	        		DAO.createNFLPlayoffsGame("AFC Champ", 10, pool.getYear(), null, null, "AFC", null, null, null, null, null);
-	        		DAO.createNFLPlayoffsGame("NFC Champ", 10, pool.getYear(), null, null, "NFC", null, null, null, null, null);
-	        		DAO.createNFLPlayoffsGame("Super Bowl", 20, pool.getYear(), null, null, null, null, null, null, null, null);
+	        		DAO.createNFLPlayoffsGame("AFC Champ", 10, pool.getYear(), null, null, "AFC", null, null, null, null, 3, null);
+	        		DAO.createNFLPlayoffsGame("NFC Champ", 10, pool.getYear(), null, null, "NFC", null, null, null, null, 3, null);
+	        		DAO.createNFLPlayoffsGame("Super Bowl", 20, pool.getYear(), null, null, null, null, null, null, null, 4, null);
 	        		break;
 	        	}
 	        }

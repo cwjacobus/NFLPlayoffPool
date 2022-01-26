@@ -58,13 +58,13 @@ public class DAO {
 	}
 	
 	public static void createNFLPlayoffsGame(String description, Integer pointsValue, Integer year, Integer home, Integer visitor, String conference,
-			Integer homeScore, Integer visScore, Integer homeSeed, Integer visSeed, Timestamp dateTime) {
+			Integer homeScore, Integer visScore, Integer homeSeed, Integer visSeed, Integer round, Timestamp dateTime) {
 		try {
 			Statement stmt = conn.createStatement();
 			String conferenceString = conference != null ? "'" + conference + "'" : null;
 			String insertSQL = "INSERT INTO NFLPlayoffsGame (Description, PointsValue, Completed, Year, Home, Visitor, Conference, HomeSeed, " +
-				" VisSeed, DateTime) VALUES ('" + description + "', " + pointsValue + ", 0, " + year + "," + home + "," + visitor + ", " + conferenceString + 
-				", " + homeSeed + ", " + visSeed + "," + (dateTime != null ? "'" + dateTime + "'" : null) + ");";
+				" VisSeed, Round, DateTime) VALUES ('" + description + "', " + pointsValue + ", 0, " + year + "," + home + "," + visitor + ", " + conferenceString + 
+				", " + homeSeed + ", " + visSeed + "," + round + "," + (dateTime != null ? "'" + dateTime + "'" : null) + ");";
 			stmt.execute(insertSQL);
 		}
 		catch (SQLException e) {
@@ -160,6 +160,7 @@ public class DAO {
 			}
 		}
 		catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return eliminatedTeams;
 	}
@@ -174,30 +175,15 @@ public class DAO {
 				nflPlayoffsGame = new NFLPlayoffsGame(rs.getInt("GameIndex"), rs.getString("Description"), rs.getString("Winner"),
 					rs.getString("Loser"), rs.getInt("PointsValue"), rs.getBoolean("Completed"), rs.getInt("Year"), rs.getInt("Home"), rs.getInt("Visitor"),
 					rs.getString("Conference"), rs.getInt("HomeScore"), rs.getInt("VisScore"), rs.getInt("HomeSeed"), rs.getInt("VisSeed"), 
-					rs.getTimestamp("DateTime"));
+					rs.getTimestamp("DateTime"), rs.getInt("Round"));
 				nflPlayoffsGameMap.put(nflPlayoffsGame.getGameIndex(), nflPlayoffsGame);
 			}
 		}
 		catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return nflPlayoffsGameMap;
 	}
-	
-	/*public static HashMap<String, NFLTeam> getNFLTeamsMap() {
-		HashMap<String, NFLTeam> nflTeamsMap = new HashMap<String, NFLTeam>();
-		try {
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM NFLTeam order by ShortName");
-			NFLTeam nflTeam;
-			while (rs.next()) {
-				nflTeam = new NFLTeam(rs.getInt("NFLTeamId"), rs.getString("LongName"), rs.getString("ShortName"));
-				nflTeamsMap.put(nflTeam.getShortName(), nflTeam);
-			}
-		}
-		catch (SQLException e) {
-		}
-		return nflTeamsMap;
-	}*/
 	
 	public static HashMap<Integer, NFLTeam> getNFLTeamsMapById() {
 		HashMap<Integer, NFLTeam> nflTeamsMap = new HashMap<Integer, NFLTeam>();
@@ -211,31 +197,50 @@ public class DAO {
 			}
 		}
 		catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return nflTeamsMap;
+	}
+	
+	public static List<String> getRound2WinningTeams(Integer year) {
+		List<String> round2WinningTeams = new ArrayList<String>();
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT winner FROM NFLPlayoffsGame where round = 2 and " + getYearClause(year, null));
+			while (rs.next()) {
+				round2WinningTeams.add(rs.getString(1));
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return round2WinningTeams;
 	}
 	
 	public static TreeMap<String, Standings> getStandings(boolean maxPoints, Integer year, Integer poolId) {
 		TreeMap<String, Standings> standings = new TreeMap<String, Standings>(Collections.reverseOrder());
 		HashMap<String, String> ptsStandings = new HashMap<String, String>();
 		HashMap<String, String> maxPtsStandings = new HashMap<String, String>();
+		String winnerSql = "";
 		try {
 			Statement stmt = conn.createStatement();
-			String winnerSql = "";
+			/*
 			if (year < 20) {
-				winnerSql = "g.winner";
+				winnerSql = "= g.winner";
 			}
 			else {  // If 2020 on use scores to determine winner
-				winnerSql = "(SELECT " + 
+				winnerSql = "= (SELECT " + 
 						    "CASE" + 
 						    " WHEN g2.homescore > g2.visscore THEN t1.shortname" + 
 						    " WHEN g2.visscore > g2.homescore THEN t2.shortname" + 
 						    " ELSE 'Tie' " + 
 						    "END " + 
 						    "FROM nflplayoffsgame g2, nflteam t1, nflteam t2 where g2.home = t1.nflteamid and g2.visitor = t2.nflteamid and g2.gameindex = g.gameindex)";
-			}
+			}*/
+			// Count as a win if the team won any game in that round
+			winnerSql = "in (SELECT winner FROM NFLPLayoffsGame where pointsvalue = g.pointsvalue and year = g.year)";
 			String sql = "SELECT u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g " + 
-					"where p.userId = u.userId and g.gameIndex = p.gameId and g.completed = true and p.winner = " + winnerSql +  
+					"where p.userId = u.userId and g.gameIndex = p.gameId and g.completed = true and p.winner " + winnerSql +  
 					" and " + getYearClause("g", year, "p", poolId) +
 					" group by u.UserName order by sum(g.PointsValue) desc, u.UserName";
 			ResultSet rs = stmt.executeQuery(sql);
@@ -263,7 +268,8 @@ public class DAO {
 			Statement stmt = conn.createStatement();
 			String sql = "select u.UserName, sum(g.PointsValue) from Pick p, User u, NFLPLayoffsGame g where " + 
 				"p.userId= u.userId and g.gameIndex = p.gameId and " + 
-				"((g.completed = true and p.winner = g.winner) or (g.completed = false and p.winner not in (select Loser from NFLPLayoffsGame where Loser is not null" + 
+				"((g.completed = true and p.winner " + winnerSql + ") or " +
+				"(g.completed = false and p.winner not in (select Loser from NFLPLayoffsGame where Loser is not null" + 
 				" and " + getYearClause(year, null) + "))) and " + getYearClause("g", year, "p", poolId)  +
 				" group by u.UserName order by sum(g.PointsValue) desc, u.UserName";
 			ResultSet rs = stmt.executeQuery(sql);
@@ -319,7 +325,7 @@ public class DAO {
 				gameId = rs.getInt("GameId");
 				pickId = rs.getInt("PickId");
 				winner = rs.getString("Winner");
-				poolId = rs.getInt("PickId");
+				poolId = rs.getInt("PoolId");
 				createdTime = rs.getTimestamp("CreatedTime");
 				if (prevUserId != null && userId.intValue()!= prevUserId.intValue()) {
 					picksMap.put(prevUserId, picksList);
@@ -335,6 +341,7 @@ public class DAO {
 			}
 		}
 		catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return picksMap;
 	}
@@ -452,6 +459,7 @@ public class DAO {
 			numberOfCompletedGames = rs.getInt(1);
 		}
 		catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return numberOfCompletedGames;
 	}
@@ -464,6 +472,7 @@ public class DAO {
 			stmt.execute(sql);
 		}
 		catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return;
 	}
