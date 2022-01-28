@@ -84,7 +84,7 @@
   			<input type="file" name="inputFileName" accept=".xls" /><br>
   			<input type="checkbox" name="usersCB" value="Users"> Users<br>
   			<input type="checkbox" name="usersFPCB" value="UsersFY"> Users&nbsp;&nbsp;From Pool ID:&nbsp;<input type="number" name="fromPoolId" min="1" max="99" style="width: 4em"/><br>
-			<input type="checkbox" name="gamesCB" value="Games"> Games <!--&nbsp;&nbsp;First Game:&nbsp;<input type="datetime-local" name="firstGameDateTime">--><br>
+			<input type="checkbox" name="gamesCB" value="Games"> Games &nbsp;&nbsp;First Game:&nbsp;<input type="datetime-local" name="firstGameDateTime"><br>
 			<input type="checkbox" name="picksCB" value="Picks"> Picks<br>
 			<input type="checkbox" name="teamsCB" value="Teams"> Teams (from WS)<br>
 			<input type="submit" value="Import">

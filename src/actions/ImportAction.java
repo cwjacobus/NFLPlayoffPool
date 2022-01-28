@@ -47,6 +47,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	private String picksCB;
 	private String teamsCB;
 	private String inputFileName;
+	private String firstGameDateTime;
 	
 	boolean usersImport = false;
 	boolean usersFYImport = false;
@@ -135,6 +136,11 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	    			importUsersAndPicks(hWorkbook);
 	    		}
 	    		if (nflPlayoffsGamesImport) {
+	    			if (firstGameDateTime == null || firstGameDateTime.length() == 0) {
+		    			context.put("errorMsg", "First Game Date and Time Required");
+		    			stack.push(context);
+		    			return "error";
+		    		}
 	    			importNFLPlayoffsGames(hWorkbook);
 	    		}
 	    	}
@@ -344,6 +350,9 @@ public class ImportAction extends ActionSupport implements SessionAware {
 	        		break;
 	        	}
 	        }
+	        // Set first game date and time on the pool from form
+	        System.out.println("firstGameDateTimeTS: " + firstGameDateTime);
+	        DAO.updatePoolFirstGameDateTime(firstGameDateTime, pool.getPoolId());
 	    }
 	    catch (Exception e) {
 	    	e.printStackTrace();
@@ -570,6 +579,14 @@ public class ImportAction extends ActionSupport implements SessionAware {
 
 	public void setTeamsCB(String teamsCB) {
 		this.teamsCB = teamsCB;
+	}
+
+	public String getFirstGameDateTime() {
+		return firstGameDateTime;
+	}
+
+	public void setFirstGameDateTime(String firstGameDateTime) {
+		this.firstGameDateTime = firstGameDateTime;
 	}
 
 	public String getInputFileName() {

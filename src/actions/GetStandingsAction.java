@@ -84,7 +84,7 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 	    	allowAdmin = true;
 	    }
 	    context.put("allowAdmin", allowAdmin);  
-	    Timestamp firstGameDateTime = DAO.getFirstGameDateTime(pool.getYear());
+	    Timestamp firstGameDateTime = DAO.getFirstGameDateTimeFromPool(pool.getPoolId());
 	    Date firstGameDate = firstGameDateTime != null ? new Date(firstGameDateTime.getTime()) : null;
 	    Calendar cal = Calendar.getInstance();
 	    //TBD check times of games

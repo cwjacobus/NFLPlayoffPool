@@ -404,11 +404,26 @@ public class DAO {
 		return firstGameIndex;
 	}
 	
+	// Not currently used
 	public static Timestamp getFirstGameDateTime(int year) {
 		Timestamp dt = null;
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("select min(dateTime) from NFLPlayoffsGame where year = " + year);
+			rs.next();
+			dt = rs.getTimestamp(1);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return dt;
+	}
+	
+	public static Timestamp getFirstGameDateTimeFromPool(Integer poolId) {
+		Timestamp dt = null;
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select firstGameDateTime from Pool where poolId = " + poolId);
 			rs.next();
 			dt = rs.getTimestamp(1);
 		}
@@ -425,7 +440,7 @@ public class DAO {
 			String sql = "SELECT * FROM Pool where poolId = " + poolId;
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
-				pool = new Pool(rs.getInt("PoolId"), rs.getString("PoolName"), rs.getInt("Year"));
+				pool = new Pool(rs.getInt("PoolId"), rs.getString("PoolName"), rs.getInt("Year"), rs.getTimestamp("FirstGameDateTime"));
 			}
 		}
 		catch (SQLException e) {
@@ -469,6 +484,18 @@ public class DAO {
 			Statement stmt = conn.createStatement();
 			String sql = "UPDATE NFLPlayoffsGame SET VisScore = " + visScore + ", HomeScore = " + homeScore + ", Winner = '" + winner + "', Loser = '" + loser + 
 				"', visitor = " + visitor + ", home = " + home + ", Completed = true WHERE GameIndex = " + gameIndex;
+			stmt.execute(sql);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return;
+	}
+	
+	public static void updatePoolFirstGameDateTime(String firstGameDateTime, Integer poolId) {
+		try {
+			Statement stmt = conn.createStatement();
+			String sql = "UPDATE Pool SET FirstGameDateTime = '" + firstGameDateTime + "' WHERE PoolId = " + poolId;
 			stmt.execute(sql);
 		}
 		catch (SQLException e) {

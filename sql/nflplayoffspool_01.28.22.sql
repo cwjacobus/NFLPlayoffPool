@@ -40,7 +40,7 @@ CREATE TABLE `nflplayoffsgame` (
   `DateTime` timestamp NULL DEFAULT NULL,
   `Round` int(3) DEFAULT NULL,
   PRIMARY KEY (`GameIndex`)
-) ENGINE=InnoDB AUTO_INCREMENT=425 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=503 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -143,6 +143,7 @@ CREATE TABLE `pool` (
   `PoolId` int(5) NOT NULL,
   `PoolName` varchar(255) NOT NULL,
   `Year` int(5) NOT NULL,
+  `FirstGameDateTime` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`PoolId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -153,7 +154,7 @@ CREATE TABLE `pool` (
 
 LOCK TABLES `pool` WRITE;
 /*!40000 ALTER TABLE `pool` DISABLE KEYS */;
-INSERT INTO `pool` VALUES (1,'Sculley 2014',14),(2,'Sculley 2015',15),(3,'Sculley 2016',16),(4,'Sculley 2017',17),(5,'Sculley 2018',18),(6,'Jacobus 2018',18),(7,'Sculley 2019',19),(8,'Jacobus 2019',19),(9,'Jacobus 2020',20),(10,'Sculley 2020',20),(11,'Jacobus 2021',21),(12,'Sculley 2021',21),(13,'Test',22);
+INSERT INTO `pool` VALUES (1,'Sculley 2014',14,NULL),(2,'Sculley 2015',15,NULL),(3,'Sculley 2016',16,NULL),(4,'Sculley 2017',17,NULL),(5,'Sculley 2018',18,NULL),(6,'Jacobus 2018',18,NULL),(7,'Sculley 2019',19,NULL),(8,'Jacobus 2019',19,NULL),(9,'Jacobus 2020',20,NULL),(10,'Sculley 2020',20,NULL),(11,'Jacobus 2021',21,'2022-01-15 22:00:00'),(12,'Sculley 2021',21,'2022-01-15 22:00:00'),(13,'Test',22,'2022-01-29 20:00:00');
 /*!40000 ALTER TABLE `pool` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -197,4 +198,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-01-26 10:08:11
+-- Dump completed on 2022-01-28  9:08:44
