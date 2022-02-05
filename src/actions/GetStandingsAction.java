@@ -1,5 +1,6 @@
 package actions;
 
+import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
 
 import com.opensymphony.xwork2.util.ValueStack;
@@ -21,6 +23,7 @@ import data.NFLTeam;
 import data.Pool;
 import data.Standings;
 import data.User;
+import init.NFLPlayoffsPoolDatabase;
 
 //import data.User;
 
@@ -37,7 +40,9 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 		ValueStack stack = ActionContext.getContext().getValueStack();
 	    Map<String, Object> context = new HashMap<String, Object>();
 		
-		DAO.setConnection();
+	    NFLPlayoffsPoolDatabase bowlPoolDB = (NFLPlayoffsPoolDatabase)ServletActionContext.getServletContext().getAttribute("Database");  
+        Connection con = bowlPoolDB.getCon();
+		DAO.setConnection(con);
 		pool = DAO.getPool(poolId);
 		if (pool == null) {
 			context.put("errorMsg", "Pool does not exist!");
