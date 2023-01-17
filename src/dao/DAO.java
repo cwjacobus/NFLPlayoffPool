@@ -164,11 +164,11 @@ public class DAO {
 		return eliminatedTeams;
 	}
 	
-	public static HashMap<Integer, NFLPlayoffsGame> getNFLPlayoffsGamesMap(Integer year) {
-		HashMap<Integer, NFLPlayoffsGame> nflPlayoffsGameMap = new HashMap<Integer, NFLPlayoffsGame>();
+	public static TreeMap<Integer, NFLPlayoffsGame> getNFLPlayoffsGamesMap(Integer year) {
+		TreeMap<Integer, NFLPlayoffsGame> nflPlayoffsGameMap = new TreeMap<Integer, NFLPlayoffsGame>();
 		try {
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM NFLPlayoffsGame where " + getYearClause(year, null));
+			ResultSet rs = stmt.executeQuery("SELECT * FROM NFLPlayoffsGame where " + getYearClause(year, null) + " order by gameIndex");
 			NFLPlayoffsGame nflPlayoffsGame;
 			while (rs.next()) {
 				nflPlayoffsGame = new NFLPlayoffsGame(rs.getInt("GameIndex"), rs.getString("Description"), rs.getString("Winner"),
@@ -602,5 +602,11 @@ public class DAO {
 			e.printStackTrace();
 		}
 		return user;
+	}
+	
+	public static void pingDatabase() throws SQLException {
+		Statement stmt = conn.createStatement();
+		String sql = "SELECT * FROM Pool";
+		stmt.executeQuery(sql);
 	}
 }

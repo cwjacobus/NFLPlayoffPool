@@ -111,3 +111,25 @@ SELECT
     ELSE 'Tie'
   END as Loser
 FROM nflplayoffsgame g, nflteam t1, nflteam t2 where g.home = t1.nflteamid and g.visitor = t2.nflteamid and g.year = 20 and g.completed=1;
+
+// 2022 user setup
+INSERT INTO user (UserName, LastName, FirstName, Email, year, admin, poolid) VALUES
+('Chris','Jacobus','Chris','cjacobus65@gmail.com',22,1,13),
+('Ben','Ezekiel','Ben',NULL,22,0,13),
+('Jake','Liu','Jake',NULL,22,0,13),
+('William','Jacobus','William',NULL,22,0,13),
+('Matt','Jacobus','Matt',NULL,22,0,13),
+('Mike','Brooks','Mike',NULL,22,0,13),
+('Toby','Kinney','Toby',NULL,22,0,13),
+('Aruna','Ezekiel','Aruna',NULL,22,0,13),
+('Kelly','Knapper','Kelly',NULL,22,0,13),
+('Bryan','Knatz','Bryan',NULL,22,0,13),
+('Logan','Blanco','Logan',NULL,22,0,13),
+('Bill','Bay','Bill','',22,0,13),
+('Gregg','Layer','Gregg','',22,0,13),
+('Gary','Roscoe','Gary','',22,0,13),
+('Jev','Ezekiel','Jev','',22,0,13),
+('Kian','Ezekiel','Kian','',22,0,13),
+('Alex','Blanco','Alex','',22,0,13),
+('John','Moses','John','',22,0,13),
+('Danny','Moses','Danny','',22,0,13)

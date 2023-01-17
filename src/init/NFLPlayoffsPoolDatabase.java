@@ -6,12 +6,13 @@ import java.sql.SQLException;
 public class NFLPlayoffsPoolDatabase { 
 	
 	private  Connection con;
+	private String connectionString;
 	
 	public NFLPlayoffsPoolDatabase(String url,String username,String password) {  
         try {  
               Class.forName("com.mysql.cj.jdbc.Driver"); 
-              String connString = url + "?user=" + username + "&password=" + password + "&useSSL=false&allowPublicKeyRetrieval=true";
-              this.con = DriverManager.getConnection(connString);  
+              connectionString = url + "?user=" + username + "&password=" + password + "&useSSL=false&allowPublicKeyRetrieval=true&autoReconnect=true";
+              this.con = DriverManager.getConnection(connectionString);  
         } catch (ClassNotFoundException e) {   
               e.printStackTrace();  
         } catch (SQLException e) {    
@@ -24,5 +25,15 @@ public class NFLPlayoffsPoolDatabase {
 	public Connection getCon() {  
 		return con;  
     }  
+	
+	public Connection reconnectAfterTimeout() {  
+		try {
+			this.con = DriverManager.getConnection(connectionString); 
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return con;  
+    }
         
 }

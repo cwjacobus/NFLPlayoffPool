@@ -14,6 +14,7 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
 
 import com.opensymphony.xwork2.util.ValueStack;
+import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -42,7 +43,15 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 		
 	    NFLPlayoffsPoolDatabase bowlPoolDB = (NFLPlayoffsPoolDatabase)ServletActionContext.getServletContext().getAttribute("Database");  
         Connection con = bowlPoolDB.getCon();
-		DAO.setConnection(con);
+		DAO.setConnection(con); 
+		try {
+        	DAO.pingDatabase();
+        }
+        catch (CommunicationsException ce) {
+        	System.out.println("DB Connection timed out - Reconnect");
+        	con = bowlPoolDB.reconnectAfterTimeout();
+        	DAO.setConnection(con);
+        }
 		pool = DAO.getPool(poolId);
 		if (pool == null) {
 			context.put("errorMsg", "Pool does not exist!");
@@ -63,7 +72,7 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 		HashMap<Integer, NFLTeam> nflTeamsMapById = DAO.getNFLTeamsMapById();
 		userSession.put("nflTeamsMapById", nflTeamsMapById);
 		TreeMap<String, Standings> standings = DAO.getStandings(maxPoints, pool.getYear(), poolId);
-		HashMap<Integer, NFLPlayoffsGame> nflPlayoffsGameMap = DAO.getNFLPlayoffsGamesMap(pool.getYear());
+		TreeMap<Integer, NFLPlayoffsGame> nflPlayoffsGameMap = DAO.getNFLPlayoffsGamesMap(pool.getYear());
 		userSession.put("nflPlayoffsGameMap", nflPlayoffsGameMap);
 		//Iterate through standings to make formatted display string
 		Iterator<Entry<String, Standings>> it = standings.entrySet().iterator();

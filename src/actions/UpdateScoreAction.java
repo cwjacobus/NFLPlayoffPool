@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 import org.apache.struts2.interceptor.SessionAware;
 
@@ -56,7 +57,7 @@ public class UpdateScoreAction extends ActionSupport implements SessionAware {
 			stack.push(context);
 			return "error";
 		}
-		HashMap<Integer, NFLPlayoffsGame> nflPlayoffsGameMap = (HashMap<Integer, NFLPlayoffsGame>)userSession.get("nflPlayoffsGameMap");
+		TreeMap<Integer, NFLPlayoffsGame> nflPlayoffsGameMap = (TreeMap<Integer, NFLPlayoffsGame>)userSession.get("nflPlayoffsGameMap");
 		NFLPlayoffsGame game = nflPlayoffsGameMap.get(gameIndex);
 		if ((game.getVisitor() != visitorId.intValue() && game.getVisitor() != 0) || (game.getHome() != homeId.intValue() && game.getHome() != 0)) {
 			context.put("errorMsg", "Invalid Visitor or Home team for this game!");

@@ -29,9 +29,12 @@
 	2020
 	var nfcTeams = {1: "GB", 2: "NO", 3: "SEA", 4: "WAS", 5: "TB", 6: "LAR", 7: "CHI"};
 	var afcTeams = {1: "KC", 2: "BUF", 3: "PIT", 4: "TEN", 5: "BAL", 6: "CLE", 7: "IND"};
-	2021 */
+	2021
 	var nfcTeams = {1: "GB", 2: "TB", 3: "DAL", 4: "LAR", 5: "ARI", 6: "SF", 7: "PHI"};
 	var afcTeams = {1: "TEN", 2: "KC", 3: "BUF", 4: "CIN", 5: "LV", 6: "NE", 7: "PIT"};
+	2022 */
+	var nfcTeams = {1: "PHI", 2: "SF", 3: "MIN", 4: "TB", 5: "DAL", 6: "NYG", 7: "SEA"};
+	var afcTeams = {1: "KC", 2: "BUF", 3: "CIN", 4: "JAX", 5: "LAC", 6: "BAL", 7: "MIA"};
 	/*for (var key in nfcTeams) {
 		alert("key " + key + " has value " + nfcTeams[key]);
 	}*/
@@ -283,8 +286,8 @@
   				<c:set var="winLoseClass" value=""/>
   			</c:if>
   			<c:if test="${((nflPlayoffsGameMap[pick.gameId].completed && (nflPlayoffsGameMap[pick.gameId].winner != pick.winner && nflPlayoffsGameMap[pick.gameId].round != 2) || 
-  							(nflPlayoffsGameMap[pick.gameId].round == 2 && !fn:contains(round2WinningTeams, pick.winner))))
-  								|| (!nflPlayoffsGameMap[pick.gameId].completed && fn:contains(eliminatedTeams, pick.winner))}">
+  						   (nflPlayoffsGameMap[pick.gameId].completed && nflPlayoffsGameMap[pick.gameId].round == 2 && !fn:contains(round2WinningTeams, pick.winner)))) ||
+  						   (!nflPlayoffsGameMap[pick.gameId].completed && fn:contains(eliminatedTeams, pick.winner))}">
   				<c:set var="winLoseClass" value="class='lose'"/>
   			</c:if>
   			<span ${winLoseClass}>${pick.winner}</span>
@@ -308,8 +311,8 @@
   					<c:set var="winLoseClass" value=""/>
   				</c:if>
   				<c:if test="${((nflPlayoffsGameMap[pick.gameId].completed && (nflPlayoffsGameMap[pick.gameId].winner != pick.winner && nflPlayoffsGameMap[pick.gameId].round != 2) || 
-  							(nflPlayoffsGameMap[pick.gameId].round == 2 && !fn:contains(round2WinningTeams, pick.winner))))
-  								|| (!nflPlayoffsGameMap[pick.gameId].completed && fn:contains(eliminatedTeams, pick.winner))}">
+  							   (nflPlayoffsGameMap[pick.gameId].completed && nflPlayoffsGameMap[pick.gameId].round == 2 && !fn:contains(round2WinningTeams, pick.winner)))) ||
+  							   (!nflPlayoffsGameMap[pick.gameId].completed && fn:contains(eliminatedTeams, pick.winner))}">
   					<c:set var="winLoseClass" value="class='lose'"/>
   				</c:if>
   				<td align=center ${winLoseClass}>${pick.winner}</td>

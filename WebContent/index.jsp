@@ -27,7 +27,8 @@
 			 <option value="9">Jacobus 2020</option>
 			 <option value="11">Jacobus 2021</option>
 			 <option value="12">Sculley 2021</option>
-			 <option value="13">Test</option>
+			 <option value="13">Jacobus 2022</option>
+			 <option value="14">Sculley 2022</option>
 		</select><br>
       	<input type="submit" name= "loginButton" value="Login"/>
   	 </form>
