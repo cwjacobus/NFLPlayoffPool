@@ -51,7 +51,8 @@ CREATE TABLE NFLTeam
 (
 NFLTeamId int(5) PRIMARY KEY,
 LongName varchar(50) NOT NULL,
-ShortName varchar(5) NOT NULL
+ShortName varchar(5) NOT NULL,
+Conference varchar(5) NOT NULL
 );
 
 CREATE TABLE NFLPlayoffsTeam

@@ -191,7 +191,7 @@ public class DAO {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM NFLTeam order by ShortName");
 			NFLTeam nflTeam;
 			while (rs.next()) {
-				nflTeam = new NFLTeam(rs.getInt("NFLTeamId"), rs.getString("LongName"), rs.getString("ShortName"));
+				nflTeam = new NFLTeam(rs.getInt("NFLTeamId"), rs.getString("LongName"), rs.getString("ShortName"), rs.getString("Conference"));
 				nflTeamsMap.put(nflTeam.getNflTeamId(), nflTeam);
 			}
 		}
@@ -199,6 +199,28 @@ public class DAO {
 			e.printStackTrace();
 		}
 		return nflTeamsMap;
+	}
+	
+	public static List<NFLTeam> getFinalFour(Integer year) {
+		List<NFLTeam> finalFour = new ArrayList<>();
+		try {
+			Statement stmt = conn.createStatement();
+			String sql = "SELECT t.* FROM NFLPlayoffsGame npg, NFLTeam t WHERE " + 
+					"npg.winner = t.shortName AND " + 
+					"(npg.gameindex >= (SELECT max(gameIndex) - 6 FROM NFLPlayoffsGame WHERE year = " + year + ") AND " + 
+					"npg.gameindex <= (SELECT max(gameIndex) - 3 FROM NFLPlayoffsGame WHERE year = " + year + ")) ORDER BY t.conference";
+			ResultSet rs = stmt.executeQuery(sql);
+			NFLTeam nflTeam;
+			while (rs.next()) {
+				nflTeam = new NFLTeam(rs.getInt("NFLTeamId"), rs.getString("LongName"), rs.getString("ShortName"), rs.getString("Conference"));
+				finalFour.add(nflTeam);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return finalFour;
 	}
 	
 	public static List<String> getRound2WinningTeams(Integer year) {

@@ -78,6 +78,8 @@
   	<br><br>
   	<c:if test = "${allowAdmin}">
   		<a href="/NFLPlayoffPool/manageGames">Manage NFL Playoffs Games</a>
+  		<br><br>
+  		<a href="/NFLPlayoffPool/getPermutations">Get Permutations</a>
   		<br>
   		<h3>Import Data</h3>
   		<form action="import">

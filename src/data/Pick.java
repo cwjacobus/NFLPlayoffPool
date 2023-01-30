@@ -70,5 +70,9 @@ public class Pick {
 	public void setCreatedTime(Timestamp createdTime) {
 		this.createdTime = createdTime;
 	}
+	
+	public String toString() {
+		return this.winner;
+	}
 
 }
