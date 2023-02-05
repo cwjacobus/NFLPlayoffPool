@@ -1,7 +1,6 @@
 package actions;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -43,15 +42,46 @@ public class GetPermutationsAction extends ActionSupport implements SessionAware
 		@SuppressWarnings("unchecked")
 		TreeMap<Integer, NFLPlayoffsGame> nflPlayoffsGameMap = (TreeMap<Integer, NFLPlayoffsGame>) userSession.get("nflPlayoffsGameMap");
 		List<NFLPlayoffsGame> nflPlayoffsGameList = nflPlayoffsGameMap.values().stream().collect(Collectors.toList());
+		if (nflPlayoffsGameList.size() < 13) {
+			context.put("errorMsg", "NFL Games have not been imported!");
+			stack.push(context);
+			return "error";
+		}
 		int superBowlIndex = nflPlayoffsGameList.size() - 1;
 		int superBowlPoints = nflPlayoffsGameList.get(superBowlIndex).getPointsValue();
 		int champIndex = nflPlayoffsGameList.size() - 2;
 		int champPoints = nflPlayoffsGameList.get(champIndex).getPointsValue();
-		List<NFLTeam> finalFour = DAO.getFinalFour(pool.getYear()); // Get the last 4 remaining teams before champ games
+		boolean preSuperBowl = !nflPlayoffsGameList.get(superBowlIndex).isCompleted() && nflPlayoffsGameList.get(champIndex).isCompleted() &&
+			nflPlayoffsGameList.get(champIndex - 1).isCompleted();
+		boolean preChampGames = nflPlayoffsGameList.get(superBowlIndex - 3).isCompleted() && nflPlayoffsGameList.get(superBowlIndex - 4).isCompleted() &&
+			nflPlayoffsGameList.get(superBowlIndex - 5).isCompleted() && nflPlayoffsGameList.get(superBowlIndex - 6).isCompleted() &&
+			!nflPlayoffsGameList.get(champIndex).isCompleted() && !nflPlayoffsGameList.get(champIndex - 1).isCompleted();
+		List<NFLTeam> finalFour = null;
+		if (preChampGames) {
+			finalFour = DAO.getFinalFour(pool.getYear()); // Get the last 4 remaining teams before champ games
+		}
 		HashMap<Integer, User> usersMap = DAO.getUsersMap(pool.getPoolId());
 		Map<Integer, List<Pick>> picksMap = DAO.getPicksMap(pool);
 		TreeMap<String, Standings> standings = DAO.getStandings(false, pool.getYear(), pool.getPoolId());
-		List<List<String>> possibleOutcomes = getPossibleOutcomes(finalFour);
+		List<List<String>> possibleOutcomes = null;
+		if (preChampGames) {
+			possibleOutcomes = getPossibleOutcomesFromFinalFour(finalFour);
+		}
+		else if (preSuperBowl) {
+			possibleOutcomes = new ArrayList<>();
+			List<String> outcome = new ArrayList<>();
+			outcome = new ArrayList<>();
+			outcome.add(nflPlayoffsGameList.get(champIndex).getWinner());
+			possibleOutcomes.add(outcome);
+			outcome = new ArrayList<>();
+			outcome.add(nflPlayoffsGameList.get(champIndex - 1).getWinner());
+			possibleOutcomes.add(outcome);
+		}
+		else {
+			context.put("errorMsg", "Permutations can only be done week before champ games or before super bowl!");
+			stack.push(context);
+			return "error";
+		}
 		Map<String, Integer> possibleStandings;
 		// Go through the 8 permutations and get the adjusted standings based on user's picks
 		for (List<String> outcome : possibleOutcomes) {
@@ -65,28 +95,32 @@ public class GetPermutationsAction extends ActionSupport implements SessionAware
 						usersPicks = picks.getValue();  // Get the user's picks
 					}
 				}
-				// Add the points to the standings total if game was picked correctly
-				if (usersPicks.get(champIndex - 1).getWinner().equals(outcome.get(outcome.size() - 3))) {
-					points += champPoints;
-				}
-				if (usersPicks.get(champIndex).getWinner().equals(outcome.get(outcome.size() - 2))) {
-					points += champPoints;
+				if (preChampGames) {
+					// Add the points to the standings total if game was picked correctly
+					if (usersPicks.get(champIndex - 1).getWinner().equals(outcome.get(outcome.size() - 3))) {
+						points += champPoints;
+					}
+					if (usersPicks.get(champIndex).getWinner().equals(outcome.get(outcome.size() - 2))) {
+						points += champPoints;
+					}
 				}
 				if (usersPicks.get(superBowlIndex).getWinner().equals(outcome.get(outcome.size() - 1))) {
 					points += superBowlPoints;
 				}
 				possibleStandings.put(userName, points);
 			}
+			// Output to console
 			System.out.println(outcome);
 			possibleStandings.entrySet()
 			  .stream()
 			  .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
 			  .forEach(System.out::println);
+			System.out.println();
 		}
 	    return "success";
 	}
 	
-	private List<List<String>> getPossibleOutcomes(List<NFLTeam> finalFour) {
+	private List<List<String>> getPossibleOutcomesFromFinalFour(List<NFLTeam> finalFour) {
 		List<List<String>> possibleOutcomes = new ArrayList<>();
 		
 		for (NFLTeam a : finalFour) {
@@ -108,8 +142,6 @@ public class GetPermutationsAction extends ActionSupport implements SessionAware
 				outcome.add(n.getShortName());
 				outcome.add(n.getShortName());
 				possibleOutcomes.add(outcome);
-				System.out.println(a.getShortName() + " " + n.getShortName() + " " + a.getShortName());
-				System.out.println(a.getShortName() + " " + n.getShortName() + " " + n.getShortName());
 			}
 		}
 		return possibleOutcomes;

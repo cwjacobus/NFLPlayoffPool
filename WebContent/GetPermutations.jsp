@@ -14,6 +14,6 @@
 	</head>
 	<body>
 		<h1>Get Permutations</h1>
-		Output displayed in console.  Note: This can only be done when there are 4 teams remaining.
+		Output displayed in console.  Note: This can only be done when there are 2 or 4 teams remaining.
 	</body>
 </html>
