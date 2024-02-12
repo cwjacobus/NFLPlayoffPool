@@ -32,9 +32,12 @@
 	2021
 	var nfcTeams = {1: "GB", 2: "TB", 3: "DAL", 4: "LAR", 5: "ARI", 6: "SF", 7: "PHI"};
 	var afcTeams = {1: "TEN", 2: "KC", 3: "BUF", 4: "CIN", 5: "LV", 6: "NE", 7: "PIT"};
-	2022 */
+	2022 
 	var nfcTeams = {1: "PHI", 2: "SF", 3: "MIN", 4: "TB", 5: "DAL", 6: "NYG", 7: "SEA"};
 	var afcTeams = {1: "KC", 2: "BUF", 3: "CIN", 4: "JAX", 5: "LAC", 6: "BAL", 7: "MIA"};
+	2023 */
+	var nfcTeams = {1: "SF", 2: "DAL", 3: "DET", 4: "TB", 5: "PHI", 6: "LAR", 7: "GB"};
+	var afcTeams = {1: "BAL", 2: "BUF", 3: "KC", 4: "HOU", 5: "CLE", 6: "MIA", 7: "PIT"};
 	/*for (var key in nfcTeams) {
 		alert("key " + key + " has value " + nfcTeams[key]);
 	}*/
