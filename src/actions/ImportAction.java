@@ -485,7 +485,7 @@ public class ImportAction extends ActionSupport implements SessionAware {
 		else if (nflTeam.equalsIgnoreCase("TENN") || nflTeam.equalsIgnoreCase("TITANS")) {
 			nflTeam = "TEN";
 		}
-		else if (nflTeam.equalsIgnoreCase("BILLS") || nflTeam.equalsIgnoreCase("BUFF")) {
+		else if (nflTeam.equalsIgnoreCase("BILLS") || nflTeam.equalsIgnoreCase("BUFF") || nflTeam.equalsIgnoreCase("BUFFALO")) {
 			nflTeam = "BUF";
 		}
 		else if (nflTeam.equalsIgnoreCase("SAINTS") || nflTeam.equalsIgnoreCase("NEW ORLEANS")) {
