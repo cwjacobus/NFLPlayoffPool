@@ -137,6 +137,17 @@ public class DAO {
 		return numberOfRows;
 	}
 	
+	public static void deleteNFLPlayoffsGamesByYear(Integer year) {
+		try {
+			Statement stmt = conn.createStatement();
+			String deleteSQL = "DELETE from NFLPlayoffsGame WHERE year = " + year;
+			stmt.execute(deleteSQL);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static void deletePicksByUserIdAndPoolId(Integer userId, Integer poolId) {
 		try {
 			Statement stmt = conn.createStatement();
@@ -500,31 +511,6 @@ public class DAO {
 		return numberOfCompletedGames;
 	}
 	
-	public static void updateNFLPlayoffsGame(Integer visScore, Integer homeScore, String winner, String loser, Integer visitor, Integer home, Integer gameIndex) {
-		try {
-			Statement stmt = conn.createStatement();
-			String sql = "UPDATE NFLPlayoffsGame SET VisScore = " + visScore + ", HomeScore = " + homeScore + ", Winner = '" + winner + "', Loser = '" + loser + 
-				"', visitor = " + visitor + ", home = " + home + ", Completed = true WHERE GameIndex = " + gameIndex;
-			stmt.execute(sql);
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return;
-	}
-	
-	public static void updatePoolFirstGameDateTime(String firstGameDateTime, Integer poolId) {
-		try {
-			Statement stmt = conn.createStatement();
-			String sql = "UPDATE Pool SET FirstGameDateTime = '" + firstGameDateTime + "' WHERE PoolId = " + poolId;
-			stmt.execute(sql);
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return;
-	}
-	
 	/*
 	public static boolean useYearClause(Integer year) {
 		boolean yearClause = false;
@@ -630,5 +616,30 @@ public class DAO {
 		Statement stmt = conn.createStatement();
 		String sql = "SELECT * FROM Pool";
 		stmt.executeQuery(sql);
+	}
+	
+	public static void updateNFLPlayoffsGame(Integer visScore, Integer homeScore, String winner, String loser, Integer visitor, Integer home, Integer gameIndex) {
+		try {
+			Statement stmt = conn.createStatement();
+			String sql = "UPDATE NFLPlayoffsGame SET VisScore = " + visScore + ", HomeScore = " + homeScore + ", Winner = '" + winner + "', Loser = '" + loser + 
+				"', visitor = " + visitor + ", home = " + home + ", Completed = true WHERE GameIndex = " + gameIndex;
+			stmt.execute(sql);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return;
+	}
+	
+	public static void updatePoolFirstGameDateTime(String firstGameDateTime, Integer poolId) {
+		try {
+			Statement stmt = conn.createStatement();
+			String sql = "UPDATE Pool SET FirstGameDateTime = '" + firstGameDateTime + "' WHERE PoolId = " + poolId;
+			stmt.execute(sql);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return;
 	}
 }

@@ -38,7 +38,7 @@
       <action name="savePicks" 
             class="actions.SavePicksAction" 
             method="execute">
-            <result name="success">/PicksSaved.jsp</result>
+            <result name="success">/Standings.jsp</result>
             <result name="error">/ErrorPage.jsp</result>
       </action>
       <action name="import" 
@@ -51,6 +51,18 @@
             class="actions.AddUserAction" 
             method="execute">
             <result name="success">/AddUser.jsp</result>
+            <result name="error">/ErrorPage.jsp</result>
+      </action>
+      <action name="createNFLPlayoffGames" 
+            class="actions.CreateNFLPlayoffGamesAction" 
+            method="execute">
+            <result name="success">/Standings.jsp</result>
+            <result name="error">/ErrorPage.jsp</result>
+      </action>
+      <action name="createNFLPlayoffTeams" 
+            class="actions.CreateNFLPlayoffTeamsAction" 
+            method="execute">
+            <result name="success">/CreateNFLPlayoffTeams.jsp</result>
             <result name="error">/ErrorPage.jsp</result>
       </action>
    </package>

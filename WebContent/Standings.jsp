@@ -77,8 +77,13 @@
   	</a>
   	<br><br>
   	<c:if test = "${allowAdmin}">
-  		<a href="/NFLPlayoffPool/manageGames">Manage NFL Playoffs Games</a>
-  		<br><br>
+  		<a href="/NFLPlayoffPool/manageGames">Enter NFL Playoff Game Scores</a><br><br>
+  		<form action="createNFLPlayoffTeams">
+  			First Game:&nbsp;<input type="datetime-local" name="createFirstGameDateTime"><br>
+  			<input type="submit" value="Create NFL Playoff Games"><br>
+  		</form>
+  		<!-- <a href="/NFLPlayoffPool/CreateNFLPlayoffTeams.jsp">Create NFL Playoff Games</a> -->
+  		<br>
   		<a href="/NFLPlayoffPool/getPermutations">Get Permutations</a>
   		<br>
   		<h3>Import Data</h3>

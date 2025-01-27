@@ -70,8 +70,7 @@ insert into pool (PoolId, PoolName, Year) values (4, 'Sculley 2017', 17);
 insert into pool (PoolId, PoolName, Year) values (5, 'Sculley 2018', 18);
 insert into pool (PoolId, PoolName, Year) values (6, 'Jacobus 2018', 18);
 
-INSERT INTO User (UserName, LastName, FirstName, Email, year, admin, poolid)
-VALUES ('Jacobus', 'Jacobus', 'Chris', 'cjacobus@austin.rr.com', 18, 1, 6);
+INSERT INTO User (UserName, LastName, FirstName, Email, year, admin, poolid) VALUES ('Jacobus', 'Jacobus', 'Chris', 'cjacobus@austin.rr.com', 18, 1, 6);
 
 INSERT INTO User (UserName, LastName, FirstName, Email, year) VALUES ('dummy', '', '', '', 18);
 INSERT INTO Pick (UserId, GameId, Favorite) VALUES ((select UserId from User where UserName = 'dummy'), 1, false);
