@@ -23,15 +23,17 @@
 <title>NFL Playoffs Pool</title>
 </head>
 <body>
-	<h2>20${year} Standings</h2>
+	<h2>20${sessionScope.pool.year} Standings</h2>
 	<table style="padding: 0; border-spacing: 0;">
 	<tr class="odd"><th></th><th>Name</th>
 	<c:choose>
 		<c:when test="${maxPoints == true}">
-			<th><a href="getStandings?maxPoints=true&year=${year}&name=${name}&poolId=${sessionScope.pool.poolId}" class="odd">Max</a></th><th><a href="getStandings?maxPoints=false&year=${year}&name=${name}&poolId=${sessionScope.pool.poolId}" class="odd">Pts</a></th>
+			<th><a href="getStandings?maxPoints=true&year=${sessionScope.pool.year}&userName=${userName}&poolName=${poolName}" class="odd">Max</a></th>
+			<th><a href="getStandings?maxPoints=false&year=${sessionScope.pool.year}&userName=${userName}&poolName=${poolName}" class="odd">Pts</a></th>
 		</c:when>
 		<c:otherwise>
-			<th><a href="getStandings?maxPoints=false&year=${year}&name=${name}&poolId=${sessionScope.pool.poolId}" class="odd">Pts</a></th><th><a href="getStandings?maxPoints=true&year=${year}&name=${name}&poolId=${sessionScope.pool.poolId}" class="odd">Max</a></th>
+			<th><a href="getStandings?maxPoints=false&year=${sessionScope.pool.year}&userName=${userName}&poolName=${poolName}" class="odd">Pts</a></th>
+			<th><a href="getStandings?maxPoints=true&year=${sessionScope.pool.year}&userName=${userName}&poolName=${poolName}" class="odd">Max</a></th>
 		</c:otherwise>
 	</c:choose>
 	</tr>

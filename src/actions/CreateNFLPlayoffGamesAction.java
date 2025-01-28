@@ -61,45 +61,31 @@ public class CreateNFLPlayoffGamesAction extends ActionSupport implements Sessio
 		}
 		HashMap<Integer, NFLTeam> nflTeamsMapById = (HashMap<Integer, NFLTeam>)userSession.get("nflTeamsMapById");
 		
-		
-		// Create 11 games for a 12 team playoff
-		/*DAO.createCFPGame("CFP Round 1 Game 1", 1, 1, seed.get(4), seed.get(11), year, 5, 12);
-		DAO.createCFPGame("CFP Round 1 Game 2", 1, 2, seed.get(7), seed.get(8), year, 8, 9);
-		DAO.createCFPGame("CFP Round 1 Game 3", 1, 3, seed.get(5), seed.get(10), year, 6, 11);
-		DAO.createCFPGame("CFP Round 1 Game 4", 1, 4, seed.get(6), seed.get(9), year, 7, 10);
-		DAO.createCFPGame("CFP Quarters Game 1", 2, 1, seed.get(3), null, year, 4, null);
-		DAO.createCFPGame("CFP Quarters Game 2", 2, 2, seed.get(0), null, year, 1, null);
-		DAO.createCFPGame("CFP Quarters Game 3", 2, 3, seed.get(2), null, year, 3, null);
-		DAO.createCFPGame("CFP Quarters Game 4", 2, 4, seed.get(1), null, year, 2, null);
-		DAO.createCFPGame("CFP Semis Game 2", 3, 2, null, null, year, null, null);
-		DAO.createCFPGame("CFP Semis Game 1", 3, 1, null, null, year, null, null);
-		DAO.createCFPGame("CFP Championship", 4, 1, null, null, year, null, null);*/
-		
-		// TBD put points value in Pool table
-		DAO.createNFLPlayoffsGame("AFC Rd 1 Game 1", 3, pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, afcSeed.get(1)), 
+		// the Pool point values are only used here to populate NFLPlayoffsGame.PointsValue
+		DAO.createNFLPlayoffsGame("AFC Rd 1 Game 1", pool.getPointsRd1(), pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, afcSeed.get(1)), 
 			getNFLTeamIdFromShortName(nflTeamsMapById, afcSeed.get(6)), "AFC", null, null, 2, 7, 1, null);
-		DAO.createNFLPlayoffsGame("AFC Rd 1 Game 2", 3, pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, afcSeed.get(2)), 
+		DAO.createNFLPlayoffsGame("AFC Rd 1 Game 2", pool.getPointsRd1(), pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, afcSeed.get(2)), 
 			getNFLTeamIdFromShortName(nflTeamsMapById, afcSeed.get(5)), "AFC", null, null, 3, 6, 1, null);
-		DAO.createNFLPlayoffsGame("AFC Rd 1 Game 3", 3, pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, afcSeed.get(3)), 
+		DAO.createNFLPlayoffsGame("AFC Rd 1 Game 3", pool.getPointsRd1(), pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, afcSeed.get(3)), 
 			getNFLTeamIdFromShortName(nflTeamsMapById, afcSeed.get(4)), "AFC", null, null, 4, 5, 1, null);
-		DAO.createNFLPlayoffsGame("NFC Rd 1 Game 1", 3, pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, nfcSeed.get(1)), 
+		DAO.createNFLPlayoffsGame("NFC Rd 1 Game 1", pool.getPointsRd1(), pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, nfcSeed.get(1)), 
 			getNFLTeamIdFromShortName(nflTeamsMapById, nfcSeed.get(6)), "NFC", null, null, 2, 7, 1, null);
-		DAO.createNFLPlayoffsGame("NFC Rd 1 Game 2", 3, pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, nfcSeed.get(2)), 
+		DAO.createNFLPlayoffsGame("NFC Rd 1 Game 2", pool.getPointsRd1(), pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, nfcSeed.get(2)), 
 			getNFLTeamIdFromShortName(nflTeamsMapById, nfcSeed.get(5)), "NFC", null, null, 3, 6, 1, null);
-		DAO.createNFLPlayoffsGame("NFC Rd 1 Game 3", 3, pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, nfcSeed.get(3)), 
+		DAO.createNFLPlayoffsGame("NFC Rd 1 Game 3", pool.getPointsRd1(), pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, nfcSeed.get(3)), 
 			getNFLTeamIdFromShortName(nflTeamsMapById, nfcSeed.get(4)), "NFC", null, null, 4, 5, 1, null);
 		
-		DAO.createNFLPlayoffsGame("AFC Rd 2 Game 1", 5, pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, afcSeed.get(0)), 
+		DAO.createNFLPlayoffsGame("AFC Rd 2 Game 1", pool.getPointsRd2(), pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, afcSeed.get(0)), 
 			null, "AFC", null, null, 1, null, 2, null);
-		DAO.createNFLPlayoffsGame("AFC Rd 2 Game 2", 5, pool.getYear(), null, null, "AFC", null, null, null, null, 2, null);
-		DAO.createNFLPlayoffsGame("NFC Rd 2 Game 1", 5, pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, nfcSeed.get(0)), 
+		DAO.createNFLPlayoffsGame("AFC Rd 2 Game 2", pool.getPointsRd2(), pool.getYear(), null, null, "AFC", null, null, null, null, 2, null);
+		DAO.createNFLPlayoffsGame("NFC Rd 2 Game 1", pool.getPointsRd2(), pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, nfcSeed.get(0)), 
 			null, "NFC", null, null, 1, null, 2, null);
-		DAO.createNFLPlayoffsGame("NFC Rd 2 Game 2", 5, pool.getYear(), null, null, "NFC", null, null, null, null, 2, null);
+		DAO.createNFLPlayoffsGame("NFC Rd 2 Game 2", pool.getPointsRd2(), pool.getYear(), null, null, "NFC", null, null, null, null, 2, null);
 		
-		DAO.createNFLPlayoffsGame("AFC Champ", 10, pool.getYear(), null, null, "AFC", null, null, null, null, 3, null);
-		DAO.createNFLPlayoffsGame("NFC Champ", 10, pool.getYear(), null, null, "NFC", null, null, null, null, 3, null);
+		DAO.createNFLPlayoffsGame("AFC Champ", pool.getPointsChamp(), pool.getYear(), null, null, "AFC", null, null, null, null, 3, null);
+		DAO.createNFLPlayoffsGame("NFC Champ", pool.getPointsChamp(), pool.getYear(), null, null, "NFC", null, null, null, null, 3, null);
 		
-		DAO.createNFLPlayoffsGame("Super Bowl", 20, pool.getYear(), null, null, null, null, null, null, null, 4, null);
+		DAO.createNFLPlayoffsGame("Super Bowl", pool.getPointsSB(), pool.getYear(), null, null, null, null, null, null, null, 4, null);
 		
 		DAO.updatePoolFirstGameDateTime(createFirstGameDateTime, pool.getPoolId());
 		

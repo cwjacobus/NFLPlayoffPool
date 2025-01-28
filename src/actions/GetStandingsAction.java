@@ -32,9 +32,10 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 	
 	private static final long serialVersionUID = 1L;
 	private Boolean maxPoints;
-	private String name;
-	Map<String, Object> userSession;
-	private Integer poolId = null;
+	private String userName;
+	private Integer year;
+	private String poolName;
+	private Map<String, Object> userSession;
 	private Pool pool;
 	
 	public String execute() throws Exception {
@@ -52,7 +53,10 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
         	con = bowlPoolDB.reconnectAfterTimeout();
         	DAO.setConnection(con);
         }
-		pool = DAO.getPool(poolId);
+		if (year < 100) {  // Adjust 2 digit years
+			year = 2000 + year;
+		}
+		pool = DAO.getPoolByPoolName(poolName + " " + year);
 		if (pool == null) {
 			context.put("errorMsg", "Pool does not exist!");
 			stack.push(context);
@@ -60,8 +64,8 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 		}
 		userSession.put("pool", pool);
 		userSession.put("year", pool.getYear());
-		User user  = DAO.getUser(name, pool.getYear(), poolId);
-		if (user != null || name.equalsIgnoreCase("admin")) { // Always allow admin to login to import users
+		User user  = DAO.getUser(userName, pool.getYear(), pool.getPoolId());
+		if (user != null || userName.equalsIgnoreCase("admin")) { // Always allow admin to login to import users
 			userSession.put("user", user);
 		}
 		else {
@@ -71,7 +75,7 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 		}
 		HashMap<Integer, NFLTeam> nflTeamsMapById = DAO.getNFLTeamsMapById();
 		userSession.put("nflTeamsMapById", nflTeamsMapById);
-		TreeMap<String, Standings> standings = DAO.getStandings(maxPoints, pool.getYear(), poolId);
+		TreeMap<String, Standings> standings = DAO.getStandings(maxPoints, pool.getYear(), pool.getPoolId());
 		TreeMap<Integer, NFLPlayoffsGame> nflPlayoffsGameMap = DAO.getNFLPlayoffsGamesMap(pool.getYear());
 		userSession.put("nflPlayoffsGameMap", nflPlayoffsGameMap);
 		//Iterate through standings to make formatted display string
@@ -94,7 +98,7 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 	    context.put("maxPoints", maxPoints);
 	    context.put("standings", standings);
 	    boolean allowAdmin = false;
-	    if ((user != null && user.isAdmin()) || name.equalsIgnoreCase("admin") || name.contains("CJ")) {
+	    if ((user != null && user.isAdmin()) || userName.equalsIgnoreCase("admin") || userName.contains("CJ")) {
 	    	allowAdmin = true;
 	    }
 	    context.put("allowAdmin", allowAdmin);  
@@ -109,7 +113,7 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 	    	userSession.put("readOnly", true);
 	    }
 	    stack.push(context);
-	    System.out.println("Login: " + name + " year: " + pool.getYear() + " poolId: " + poolId + " time: " + new Timestamp(new Date().getTime()));
+	    System.out.println("Login: " + userName + " year: " + pool.getYear() + " poolId: " + pool.getPoolId() + " time: " + new Timestamp(new Date().getTime()));
 	    return "success";
 	}
 
@@ -121,20 +125,28 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 		this.maxPoints = maxPoints;
 	}
 	
-	public String getName() {
-		return name;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setName(String name) {
-	   this.name = name;
+	public void setUserName(String userName) {
+	   this.userName = userName;
 	}
 	
-	public Integer getPoolId() {
-		return poolId;
+	public Integer getYear() {
+		return year;
 	}
 
-	public void setPoolId(Integer poolId) {
-	   this.poolId = poolId;
+	public void setYear(Integer year) {
+		this.year = year;
+	}
+
+	public String getPoolName() {
+		return poolName;
+	}
+
+	public void setPoolName(String poolName) {
+	   this.poolName = poolName;
 	}
 	
 	public void setSession(Map<String, Object> session) {

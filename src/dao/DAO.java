@@ -465,14 +465,15 @@ public class DAO {
 		return dt;
 	}
 	
-	public static Pool getPool(Integer poolId) {
+	public static Pool getPoolByPoolName(String poolName) {
 		Pool pool = null;
 		try {
 			Statement stmt = conn.createStatement();
-			String sql = "SELECT * FROM Pool where poolId = " + poolId;
+			String sql = "SELECT * FROM Pool where PoolName = '" + poolName + "'";
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
-				pool = new Pool(rs.getInt("PoolId"), rs.getString("PoolName"), rs.getInt("Year"), rs.getTimestamp("FirstGameDateTime"));
+				pool = new Pool(rs.getInt("PoolId"), rs.getString("PoolName"), rs.getInt("Year"), rs.getTimestamp("FirstGameDateTime"), rs.getInt("PointsRd1"),
+					rs.getInt("PointsRd2"), rs.getInt("PointsChamp"), rs.getInt("PointsSB"));
 			}
 		}
 		catch (SQLException e) {
