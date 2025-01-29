@@ -42,14 +42,15 @@ CreatedTime timestamp
 
 CREATE TABLE Pool
 (
-PoolId int(5) PRIMARY KEY,
+PoolId int(5) PRIMARY KEY AUTO_INCREMENT,
 PoolName varchar(255) NOT NULL,
 Year int(5) NOT NULL,
 FirstGameDateTime timestamp,
 PointsRd1 int(11) NOT NULL DEFAULT 3,
 PointsRd2 int(11) NOT NULL DEFAULT 5,
 PointsChamp int(11) NOT NULL DEFAULT 10,
-PointsSB int(11) NOT NULL DEFAULT 20
+PointsSB int(11) NOT NULL DEFAULT 20,
+CONSTRAINT P_CONST1 UNIQUE (PoolName, Year)
 );
 
 CREATE TABLE NFLTeam

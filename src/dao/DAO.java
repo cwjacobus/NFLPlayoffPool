@@ -26,6 +26,25 @@ public class DAO {
 	
 	public static Connection conn;
 	
+	public static int copyUsersFromAnotherPool(Integer year, Integer toPoolId, Integer fromPoolId) {
+		int numberOfRows = 0;
+		try {
+			Statement stmt = conn.createStatement();
+			String adminSQL = "CASE WHEN User.LastName like '%Jacobus%' AND User.FirstName like '%Chris%' THEN true ELSE false END";
+			String insertSQL = "INSERT INTO User (UserName, LastName, FirstName, Year, Admin, PoolId) " + 
+				"SELECT User.UserName, User.LastName, User.FirstName, " + year + ", " + adminSQL + ", " + toPoolId + " FROM User WHERE User.poolId = " + fromPoolId;
+			stmt.executeUpdate(insertSQL);
+			ResultSet rs = stmt.executeQuery("SELECT ROW_COUNT()");
+			if (rs.next()) {
+				numberOfRows = rs.getInt(1);
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return numberOfRows;
+	}
+	
 	public static void createBatchPicks(List<Pick> picksList, Integer poolId) {
 		try {
 			conn.setAutoCommit(false);
@@ -82,6 +101,34 @@ public class DAO {
 		}
 	}
 	
+	public static void createPick(Integer userId, Integer gameId, String winner, Integer poolId) {
+		try {
+			Statement stmt = conn.createStatement();
+			String insertSQL = "INSERT INTO Pick (UserId, GameId, Winner, PoolId, CreatedTime) VALUES (" + 
+				userId + ", " + gameId + ", '" + winner + "', " + poolId + ", NOW());";
+			stmt.execute(insertSQL);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static boolean createPool(String poolName, Integer year, Integer pointsRd1, Integer pointsRd2, Integer pointsChamp, Integer pointsSB) {
+		try {
+			Statement stmt = conn.createStatement();
+			String insertSQL = "INSERT INTO Pool (PoolName ,Year, PointsRd1, PointsRd2, PointsChamp, PointsSB) VALUES ('" + 
+				poolName + "', " + year + ", " + pointsRd1 + ", " + pointsRd2 + ", " + pointsChamp + ", " + pointsSB + ");";
+			stmt.execute(insertSQL);
+		}
+		catch (SQLIntegrityConstraintViolationException ie) {
+			return false;
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+	
 	public static int createUser(String userName, String firstName, String lastName, Integer year, Integer poolId) {
 		int userId = 0;
 		try {
@@ -104,37 +151,6 @@ public class DAO {
 			e.printStackTrace();
 		}
 		return userId;
-	}
-	
-	public static void createPick(Integer userId, Integer gameId, String winner, Integer poolId) {
-		try {
-			Statement stmt = conn.createStatement();
-			String insertSQL = "INSERT INTO Pick (UserId, GameId, Winner, PoolId, CreatedTime) VALUES (" + 
-				userId + ", " + gameId + ", '" + winner + "', " + poolId + ", NOW());";
-			stmt.execute(insertSQL);
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static int copyUsersFromAnotherPool(Integer year, Integer toPoolId, Integer fromPoolId) {
-		int numberOfRows = 0;
-		try {
-			Statement stmt = conn.createStatement();
-			String adminSQL = "CASE WHEN User.LastName like '%Jacobus%' AND User.FirstName like '%Chris%' THEN true ELSE false END";
-			String insertSQL = "INSERT INTO User (UserName, LastName, FirstName, Year, Admin, PoolId) " + 
-				"SELECT User.UserName, User.LastName, User.FirstName, " + year + ", " + adminSQL + ", " + toPoolId + " FROM User WHERE User.poolId = " + fromPoolId;
-			stmt.executeUpdate(insertSQL);
-			ResultSet rs = stmt.executeQuery("SELECT ROW_COUNT()");
-			if (rs.next()) {
-				numberOfRows = rs.getInt(1);
-			}
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return numberOfRows;
 	}
 	
 	public static void deleteNFLPlayoffsGamesByYear(Integer year) {

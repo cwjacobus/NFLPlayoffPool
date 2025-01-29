@@ -5,7 +5,7 @@
 <title>NFL Playoffs Pool</title>
 </head>
 <body>
-	<h1>NFL Playoffs Pool</h1>
+	<h2>NFL Playoffs Pool</h2>
    	<form action="getStandings" onsubmit="loginButton.disabled = true; return true;">
    		<table>
    		<tr><td>User Name</td><td><input type="text" name="userName" size="10"/></td></tr>
