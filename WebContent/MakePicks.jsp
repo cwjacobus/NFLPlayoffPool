@@ -38,12 +38,11 @@
 	2023 
 	var nfcTeams = {1: "SF", 2: "DAL", 3: "DET", 4: "TB", 5: "PHI", 6: "LAR", 7: "GB"};
 	var afcTeams = {1: "BAL", 2: "BUF", 3: "KC", 4: "HOU", 5: "CLE", 6: "MIA", 7: "PIT"};
-	2024 */
+	2024 
 	var nfcTeams = {1: "DET", 2: "PHI", 3: "TB", 4: "LAR", 5: "MIN", 6: "WAS", 7: "GB"};
-	var afcTeams = {1: "KC", 2: "BUF", 3: "BAL", 4: "HOU", 5: "LAC", 6: "PIT", 7: "DEN"};
-	/*for (var key in nfcTeams) {
-		alert("key " + key + " has value " + nfcTeams[key]);
-	}*/
+	var afcTeams = {1: "KC", 2: "BUF", 3: "BAL", 4: "HOU", 5: "LAC", 6: "PIT", 7: "DEN"};*/
+	var nfcTeams = ${sessionScope.nfcPlayoffTeamsJSON};
+	var afcTeams = ${sessionScope.afcPlayoffTeamsJSON};
 	
 	function addDropDown(team, seed, gameCode, ddElement) {
 		var option = document.createElement('option');

@@ -42,6 +42,9 @@ public class CreatePoolAction extends ActionSupport {
 		}
 		System.out.println("Create Pool: " + year + " Copy Users: " + (copyUsers != null ? "true" : "false"));
 		if (DAO.createPool(poolName + " 20" + year, year, pointsRd1, pointsRd2, pointsChamp, pointsSB)) {
+			if (copyUsers != null && copyUsers.length() > 0) {
+				DAO.copyUsersFromPreviousYear(year, poolName); // Populate the pool with previous years users
+			}
 			return "success";
 		}
 		else {

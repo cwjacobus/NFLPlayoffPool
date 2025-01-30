@@ -45,6 +45,23 @@ public class DAO {
 		return numberOfRows;
 	}
 	
+	public static void copyUsersFromPreviousYear(Integer year, String fromPoolNameBase) {
+		// Assumes pool name is Jacobus/Sculley 20XX
+		try {
+			Statement stmt = conn.createStatement();
+			String toPoolIdSQL = "(SELECT poolId FROM Pool where year=" + year + " AND poolName = '" + (fromPoolNameBase + " 20" + year) + "')";
+			String fromPoolIdSQL = "(SELECT poolId FROM Pool where year=" + (year-1) + " AND poolName = '" + (fromPoolNameBase + " 20" + (year-1)) + "')";
+			String insertSQL = "INSERT INTO User (UserName, LastName, FirstName, Year, Admin, PoolId) " + 
+				"SELECT User.UserName, User.LastName, User.FirstName, " + year + ", User.admin," + toPoolIdSQL + 
+				" FROM User WHERE User.poolId = " + fromPoolIdSQL;
+			stmt.executeUpdate(insertSQL);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return;
+	}
+	
 	public static void createBatchPicks(List<Pick> picksList, Integer poolId) {
 		try {
 			conn.setAutoCommit(false);
@@ -209,6 +226,31 @@ public class DAO {
 			e.printStackTrace();
 		}
 		return nflPlayoffsGameMap;
+	}
+	
+	public static HashMap<Integer, String> getNFLPlayoffsTeamsMapByConference(int year, HashMap<Integer, NFLTeam> nflTeamsMap, String conference) {
+		HashMap<Integer, String> nflPlayoffsTeamsMap = new HashMap<>();
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT distinct Home, HomeSeed, Visitor, VisSeed from NFLPlayoffsGame where year=" + year + 
+				" and Conference= '" + conference + "'");
+			while (rs.next()) {
+				Integer home = rs.getInt(1);
+				Integer homeSeed = rs.getInt(2);
+				Integer visitor = rs.getInt(3);
+				Integer visSeed = rs.getInt(4);
+				if ((home != null && home != 0) && (homeSeed != null && homeSeed != 0) && nflTeamsMap.get(homeSeed) != null) {
+					nflPlayoffsTeamsMap.put(homeSeed, nflTeamsMap.get(home).getShortName());
+				}
+				if ((visitor != null && visitor != 0) && (visSeed != null && visSeed != 0) && nflTeamsMap.get(homeSeed) != null) {
+					nflPlayoffsTeamsMap.put(visSeed, nflTeamsMap.get(visitor).getShortName());
+				}
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return nflPlayoffsTeamsMap;
 	}
 	
 	public static HashMap<Integer, NFLTeam> getNFLTeamsMapById() {

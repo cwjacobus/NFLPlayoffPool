@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
+import org.json.JSONObject;
 
 import com.opensymphony.xwork2.util.ValueStack;
 import com.mysql.cj.jdbc.exceptions.CommunicationsException;
@@ -75,6 +76,12 @@ public class GetStandingsAction extends ActionSupport implements SessionAware {
 		}
 		HashMap<Integer, NFLTeam> nflTeamsMapById = DAO.getNFLTeamsMapById();
 		userSession.put("nflTeamsMapById", nflTeamsMapById);
+		HashMap<Integer, String> afcPlayoffTeams = DAO.getNFLPlayoffsTeamsMapByConference(pool.getYear(), nflTeamsMapById, "AFC");
+		HashMap<Integer, String> nfcPlayoffTeams = DAO.getNFLPlayoffsTeamsMapByConference(pool.getYear(), nflTeamsMapById, "NFC");
+		JSONObject afcPlayoffTeamsJSON = new JSONObject(afcPlayoffTeams);
+		JSONObject nfcPlayoffTeamsJSON = new JSONObject(nfcPlayoffTeams);
+		userSession.put("afcPlayoffTeamsJSON", afcPlayoffTeamsJSON.toString());
+	    userSession.put("nfcPlayoffTeamsJSON", nfcPlayoffTeamsJSON.toString());
 		TreeMap<String, Standings> standings = DAO.getStandings(maxPoints, pool.getYear(), pool.getPoolId());
 		TreeMap<Integer, NFLPlayoffsGame> nflPlayoffsGameMap = DAO.getNFLPlayoffsGamesMap(pool.getYear());
 		userSession.put("nflPlayoffsGameMap", nflPlayoffsGameMap);
