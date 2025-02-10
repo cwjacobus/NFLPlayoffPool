@@ -30,17 +30,27 @@ public class CreateNFLPlayoffGamesAction extends ActionSupport implements Sessio
 	public String execute() throws Exception {
 		ValueStack stack = ActionContext.getContext().getValueStack();
 	    Map<String, Object> context = new HashMap<String, Object>();
-	    nflPlayoffsGameMap = (Map<Integer, NFLPlayoffsGame>)userSession.get("nflPlayoffsGameMap");
 		if (userSession == null || userSession.size() == 0) {
 			context.put("errorMsg", "Session has expired!");
 			stack.push(context);
 			return "error";
 		}
+		
+		nflPlayoffsGameMap = (Map<Integer, NFLPlayoffsGame>)userSession.get("nflPlayoffsGameMap");
+	    HashMap<Integer, NFLTeam> nflTeamsMapById = (HashMap<Integer, NFLTeam>)userSession.get("nflTeamsMapById");
+	    
 		for (String seededTeam : afcSeed) {
 			if (seededTeam == null || seededTeam.length() == 0) {
 				context.put("errorMsg", "Not all AFC playoff teams have been entered!");
 				stack.push(context);
 				return "error";
+			}
+			else {
+				if (getNFLTeamIdFromShortName(nflTeamsMapById, seededTeam) == null) {
+					context.put("errorMsg", "Invalid AFC playoff team: " + seededTeam);
+					stack.push(context);
+					return "error";
+				}
 			}
 		}
 		for (String seededTeam : nfcSeed) {
@@ -48,6 +58,13 @@ public class CreateNFLPlayoffGamesAction extends ActionSupport implements Sessio
 				context.put("errorMsg", "Not all NFC playoff teams have been entered!");
 				stack.push(context);
 				return "error";
+			}
+			else {
+				if (getNFLTeamIdFromShortName(nflTeamsMapById, seededTeam) == null) {
+					context.put("errorMsg", "Invalid NFC playoff team: " + seededTeam);
+					stack.push(context);
+					return "error";
+				}
 			}
 		}
 		if (createFirstGameDateTime == null || createFirstGameDateTime.length() == 0) {
@@ -59,7 +76,6 @@ public class CreateNFLPlayoffGamesAction extends ActionSupport implements Sessio
 		if (nflPlayoffsGameMap != null && nflPlayoffsGameMap.size() != 0) {
 			DAO.deleteNFLPlayoffsGamesByYear(pool.getYear());
 		}
-		HashMap<Integer, NFLTeam> nflTeamsMapById = (HashMap<Integer, NFLTeam>)userSession.get("nflTeamsMapById");
 		
 		// the Pool point values are only used here to populate NFLPlayoffsGame.PointsValue
 		DAO.createNFLPlayoffsGame("AFC Rd 1 Game 1", pool.getPointsRd1(), pool.getYear(), getNFLTeamIdFromShortName(nflTeamsMapById, afcSeed.get(1)), 
@@ -101,8 +117,7 @@ public class CreateNFLPlayoffGamesAction extends ActionSupport implements Sessio
 				.filter(entry -> Objects.equals(entry.getValue().getShortName(), nflTeamShortName))
 				.map(Map.Entry::getKey)
 				.findFirst();
-		
-		return nflTeamId.get();
+		return nflTeamId.isPresent() ? nflTeamId.get(): null;
 	}
 
 

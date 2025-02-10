@@ -139,3 +139,10 @@ INSERT INTO user (UserName, LastName, FirstName, Email, year, admin, poolid) VAL
 ('Alex','Blanco','Alex','',22,0,13),
 ('John','Moses','John','',22,0,13),
 ('Danny','Moses','Danny','',22,0,13)
+
+// Instructions for starting a new year
+1. http://localhost:8080/NFLPlayoffPool/CreatePool.jsp to create pool (copy users for Jacobus)
+2. Login to new pool as Chris
+3. Create NFL Playoff Games (provide first game date/time)
+4. Enter NFL Playoff Teams by seed using NFLTeam.ShortName
+5. Make picks

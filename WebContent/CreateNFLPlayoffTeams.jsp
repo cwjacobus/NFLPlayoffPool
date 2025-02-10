@@ -30,7 +30,7 @@
       			</c:forEach>
       		</table>
       		<input type="hidden" name="createFirstGameDateTime" value="${createFirstGameDateTime}"/>
-      		<input type="submit" name="createNFLPlayoffGamesButton" value="Create NFL Playoff Games"/>
+      		<input type="submit" value="Create NFL Playoff Games"/>
       	</form>
 	</body>
 </html>

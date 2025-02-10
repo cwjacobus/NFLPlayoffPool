@@ -82,7 +82,7 @@
   		<a href="/NFLPlayoffPool/manageGames">Enter NFL Playoff Game Scores</a><br><br>
   		<form action="createNFLPlayoffTeams">
   			First Game:&nbsp;<input type="datetime-local" name="createFirstGameDateTime"><br>
-  			<input type="submit" value="Create NFL Playoff Games"><br>
+  			<input type="submit" value="Create NFL Playoff Teams and Games"><br>
   		</form>
   		<!-- <a href="/NFLPlayoffPool/CreateNFLPlayoffTeams.jsp">Create NFL Playoff Games</a> -->
   		<br>

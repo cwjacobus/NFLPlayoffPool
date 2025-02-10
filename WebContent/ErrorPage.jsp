@@ -15,6 +15,6 @@
 	<body>
 		<h1>Error</h1>
 		<div class="errText">${errorMsg}<br><br>
-		return to <a href="/BowlPoolWeb">Login</a></div>
+		return to <a href="/NFLPlayoffPool">Login</a></div>
 	</body>
 </html>
