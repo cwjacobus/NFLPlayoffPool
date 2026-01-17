@@ -146,3 +146,8 @@ INSERT INTO user (UserName, LastName, FirstName, Email, year, admin, poolid) VAL
 3. Create NFL Playoff Games (provide first game date/time)
 4. Enter NFL Playoff Teams by seed using NFLTeam.ShortName
 5. Make picks
+
+// Copy users 
+INSERT INTO User (UserName, LastName, FirstName, year, admin, PoolId) SELECT User.UserName, User.LastName, User.FirstName, 25, User.admin, 36 
+FROM User WHERE User.poolId = 17;
+
